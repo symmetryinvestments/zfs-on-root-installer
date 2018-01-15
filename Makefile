@@ -12,7 +12,7 @@ SUBDIRS := debian kernel
 CLEAN_FILES := nothing
 
 CONFIGDIRS := .
-CONFIGDIRS += zfs-config
+CONFIGDIRS += $(abspath zfs-config)
 export CONFIGDIRS
 
 # The minimal install system is built as this arch, not the installed server
