@@ -32,6 +32,7 @@ DEBIAN = debian/build/$(DEBIAN_BASENAME)
 # Rules to go and make the debian installed root
 # Note: this has no dependancy checking, and will simply use what ever
 # file is there
+.PHONY: $(DEBIAN).cpio
 $(DEBIAN).cpio: debian/Makefile
 	$(MAKE) -C debian build/$(DEBIAN_BASENAME).cpio
 
@@ -45,6 +46,7 @@ kernel/ubuntu.amd64.kernel kernel/ubuntu.amd64.modules.cpio:
 combined.initrd: $(DEBIAN).cpio kernel/ubuntu.amd64.modules.cpio
 	cat $^ >$@
 
+# Just build the initramfs and boot it directly
 test_quick: combined.initrd kernel/ubuntu.amd64.kernel
 	qemu-system-x86_64 -enable-kvm -append console=ttyS0 \
 	    -m 1024 \
