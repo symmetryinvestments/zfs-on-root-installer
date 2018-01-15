@@ -12,3 +12,6 @@ libnvpair1linux libzpool2linux libzfs2linux
 # ubuntu's kernel includes them).  Additionally, if this could be installed
 # then it would pull in the above dependencies automatically
 #zfsutils-linux
+
+# ensure we can verify the ubuntu package signatures
+ubuntu-archive-keyring

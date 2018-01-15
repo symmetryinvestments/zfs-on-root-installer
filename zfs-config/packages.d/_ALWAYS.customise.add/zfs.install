@@ -1,0 +1,12 @@
+#!/bin/bash
+#
+# This script is a wrapper around the individual ZFS full system install
+# scripts - located in /zfs.d
+
+echo WARNING: this will destroy your system
+
+for i in /zfs.d/*.sh; do
+    . $i
+done
+
+
