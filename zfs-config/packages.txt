@@ -1,0 +1,17 @@
+# Packages to add to the basic debian system to allow us to install zfs
+# 
+
+debootstrap
+gdisk
+
+# FIXME:
+# Would install these additional packages, if possible, but the multistrap
+# environment doesnt want to let me enable the contrib repos
+#libnvpair1linux libzpool2linux libzfs2linux
+
+# TODO:
+# Would install this key package (also from the contrib repos), but it
+# depends on building the zfs kernel modules (which we do not need, since
+# ubuntu's kernel includes them).  Additionally, if this could be installed
+# then it would pull in the above dependencies automatically
+#zfsutils-linux
