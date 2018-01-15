@@ -1,6 +1,0 @@
-#
-# Enable the repos required to install the zfs support tools in the install
-# environment
-#
-
-sed -i -e 's/$/ contrib/' /etc/apt/sources.list.d/multistrap-debianrescue.list

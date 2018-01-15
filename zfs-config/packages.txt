@@ -4,10 +4,7 @@
 debootstrap
 gdisk
 
-# FIXME:
-# Would install these additional packages, if possible, but the multistrap
-# environment doesnt want to let me enable the contrib repos
-#libnvpair1linux libzpool2linux libzfs2linux
+libnvpair1linux libzpool2linux libzfs2linux
 
 # TODO:
 # Would install this key package (also from the contrib repos), but it
