@@ -1,0 +1,10 @@
+
+# downloaded files
+ubuntu.amd64.kernel
+*.deb
+
+# workdir
+ubuntu.linux-image-*.deb.dir/
+
+# generated output
+ubuntu.amd64.modules.cpio

@@ -7,7 +7,7 @@ all:
 	@echo not yet
 	false
 
-SUBDIRS := debian
+SUBDIRS := debian kernel
 
 CLEAN_FILES := nothing
 
@@ -39,9 +39,23 @@ $(DEBIAN).cpio: debian/Makefile
 debian/Makefile:
 	git submodule update --init --remote
 
+kernel/ubuntu.amd64.kernel kernel/ubuntu.amd64.modules.cpio:
+	$(MAKE) -C kernel all
+
+combined.initrd: $(DEBIAN).cpio kernel/ubuntu.amd64.modules.cpio
+	cat $^ >$@
+
+test_quick: combined.initrd kernel/ubuntu.amd64.kernel
+	qemu-system-x86_64 -enable-kvm -append console=ttyS0 \
+	    -m 1024 \
+	    -kernel kernel/ubuntu.amd64.kernel \
+	    -initrd combined.initrd \
+	    -netdev type=user,id=e0 -device virtio-net-pci,netdev=e0 \
+	    -nographic
 
 clean:
 	$(foreach dir,$(SUBDIRS),$(MAKE) -C $(dir) $@ &&) true
 	rm -f $(CLEAN_FILES)
 
-
+reallyclean:
+	$(foreach dir,$(SUBDIRS),$(MAKE) -C $(dir) $@ &&) true
