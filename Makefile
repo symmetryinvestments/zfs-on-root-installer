@@ -21,9 +21,14 @@ export CONFIG_DEBIAN_ARCH
 
 CONFIG_DEBIAN_VER := stretch
 
+ISODIR := iso
+DISK_IMAGE := $(ISODIR)/boot.img
+ISO_IMAGE := boot.iso
+PART_SIZE_MEGS = 200
+
 build-depends:
 	$(foreach dir,$(SUBDIRS),$(MAKE) -C $(dir) $@ &&) true
-	sudo apt install ovmf
+	sudo apt install ovmf isolinux xorriso
 
 # Calculate the basename of the debian build file
 DEBIAN_BASENAME = debian.$(CONFIG_DEBIAN_VER).$(CONFIG_DEBIAN_ARCH)
@@ -46,6 +51,31 @@ kernel/ubuntu.amd64.kernel kernel/ubuntu.amd64.modules.cpio:
 combined.initrd: $(DEBIAN).cpio kernel/ubuntu.amd64.modules.cpio
 	cat $^ >$@
 
+$(DISK_IMAGE): startup.nsh bootx64.efi combined.initrd kernel/ubuntu.amd64.kernel
+	mkdir -p $(dir $@)
+	truncate --size=$(PART_SIZE_MEGS)M $@.tmp
+	mformat -i $@.tmp -v EFS -N 2 -t $(PART_SIZE_MEGS) -h 64 -s 32 ::
+	mmd -i $@.tmp ::efi
+	mmd -i $@.tmp ::efi/boot
+	mcopy -i $@.tmp kernel/ubuntu.amd64.kernel ::linux.efi
+	mcopy -i $@.tmp combined.initrd ::initrd
+	mcopy -i $@.tmp startup.nsh ::
+	mv $@.tmp $@
+
+#	mcopy -i $@.tmp bootx64.efi ::efi/boot
+
+$(ISODIR)/isolinux.bin: /usr/lib/ISOLINUX/isolinux.bin
+	mkdir -p $(dir $@)
+	cp $^ $@
+
+$(ISO_IMAGE): $(DISK_IMAGE) $(ISODIR)/isolinux.bin
+	xorrisofs \
+	    -o $@ \
+	    -c boot.cat -b isolinux.bin \
+	    -no-emul-boot -boot-load-size 4 -boot-info-table \
+	    --efi-boot $(notdir $(DISK_IMAGE)) \
+	    $(ISODIR)
+
 # Just build the initramfs and boot it directly
 test_quick: combined.initrd kernel/ubuntu.amd64.kernel
 	qemu-system-x86_64 -enable-kvm -append console=ttyS0 \
@@ -53,6 +83,15 @@ test_quick: combined.initrd kernel/ubuntu.amd64.kernel
 	    -kernel kernel/ubuntu.amd64.kernel \
 	    -initrd combined.initrd \
 	    -netdev type=user,id=e0 -device virtio-net-pci,netdev=e0 \
+	    -nographic
+
+# Test the EFI boot
+test_efi: $(ISO_IMAGE)
+	qemu-system-x86_64 -enable-kvm \
+	    -bios /usr/share/OVMF/OVMF_CODE.fd \
+	    -m 1024 \
+	    -netdev type=user,id=e0 -device virtio-net-pci,netdev=e0 \
+	    -cdrom $(ISO_IMAGE) \
 	    -nographic
 
 clean:
