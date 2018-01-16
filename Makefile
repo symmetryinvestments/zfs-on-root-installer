@@ -51,7 +51,7 @@ kernel/ubuntu.amd64.kernel kernel/ubuntu.amd64.modules.cpio:
 combined.initrd: $(DEBIAN).cpio kernel/ubuntu.amd64.modules.cpio
 	cat $^ >$@
 
-$(DISK_IMAGE): startup.nsh bootx64.efi combined.initrd kernel/ubuntu.amd64.kernel
+$(DISK_IMAGE): startup.nsh combined.initrd kernel/ubuntu.amd64.kernel
 	mkdir -p $(dir $@)
 	truncate --size=$(PART_SIZE_MEGS)M $@.tmp
 	mformat -i $@.tmp -v EFS -N 2 -t $(PART_SIZE_MEGS) -h 64 -s 32 ::
@@ -61,8 +61,6 @@ $(DISK_IMAGE): startup.nsh bootx64.efi combined.initrd kernel/ubuntu.amd64.kerne
 	mcopy -i $@.tmp combined.initrd ::initrd
 	mcopy -i $@.tmp startup.nsh ::
 	mv $@.tmp $@
-
-#	mcopy -i $@.tmp bootx64.efi ::efi/boot
 
 $(ISODIR)/isolinux.bin: /usr/lib/ISOLINUX/isolinux.bin
 	mkdir -p $(dir $@)
