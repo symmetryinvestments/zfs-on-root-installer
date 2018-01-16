@@ -86,6 +86,15 @@ test_efi: $(ISO_IMAGE)
 	    -cdrom $(ISO_IMAGE) \
 	    -nographic
 
+# Test EFI booting, with an actual graphics console visible
+test_efigui: $(ISO_IMAGE)
+	qemu-system-x86_64 -enable-kvm \
+	    -bios /usr/share/OVMF/OVMF_CODE.fd \
+	    -m 1024 \
+	    -netdev type=user,id=e0 -device virtio-net-pci,netdev=e0 \
+	    -cdrom $(ISO_IMAGE) \
+	    -serial stdio
+
 clean:
 	$(foreach dir,$(SUBDIRS),$(MAKE) -C $(dir) $@ &&) true
 	rm -f $(CLEAN_FILES)
