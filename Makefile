@@ -62,15 +62,9 @@ $(DISK_IMAGE): startup.nsh combined.initrd kernel/ubuntu.amd64.kernel
 	mcopy -i $@.tmp startup.nsh ::
 	mv $@.tmp $@
 
-$(ISODIR)/isolinux.bin: /usr/lib/ISOLINUX/isolinux.bin
-	mkdir -p $(dir $@)
-	cp $^ $@
-
-$(ISO_IMAGE): $(DISK_IMAGE) $(ISODIR)/isolinux.bin
+$(ISO_IMAGE): $(DISK_IMAGE)
 	xorrisofs \
 	    -o $@ \
-	    -c boot.cat -b isolinux.bin \
-	    -no-emul-boot -boot-load-size 4 -boot-info-table \
 	    --efi-boot $(notdir $(DISK_IMAGE)) \
 	    $(ISODIR)
 
