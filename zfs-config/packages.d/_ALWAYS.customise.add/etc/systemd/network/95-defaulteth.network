@@ -1,0 +1,16 @@
+# By default, all ethernet ports are clients trying to become our upstream
+# Override the debian-minimal system version with one that doesnt require
+# any ethernet ports for "Online" - this can cause quite a delay when
+# servers have lots of ports
+[Match]
+Name=eth* en*
+
+[Network]
+DHCP=yes
+LLMNR=true
+MulticastDNS=true
+LLDP=true
+EmitLLDP=true
+
+[Link]
+RequiredForOnline=no

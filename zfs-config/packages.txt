@@ -1,6 +1,8 @@
 # Packages to add to the basic debian system to allow us to install zfs
 # 
 
+htop
+
 debootstrap
 gdisk
 
