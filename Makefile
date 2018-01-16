@@ -93,7 +93,7 @@ test_efigui: $(ISO_IMAGE)
 	    -m 1024 \
 	    -netdev type=user,id=e0 -device virtio-net-pci,netdev=e0 \
 	    -cdrom $(ISO_IMAGE) \
-	    -serial stdio
+	    -serial vc -serial stdio
 
 clean:
 	$(foreach dir,$(SUBDIRS),$(MAKE) -C $(dir) $@ &&) true
