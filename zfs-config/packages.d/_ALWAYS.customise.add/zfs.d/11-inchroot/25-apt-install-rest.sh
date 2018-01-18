@@ -4,3 +4,5 @@
 
 # FIXME
 
+# eg:
+# apt install -y ubuntu-desktop
