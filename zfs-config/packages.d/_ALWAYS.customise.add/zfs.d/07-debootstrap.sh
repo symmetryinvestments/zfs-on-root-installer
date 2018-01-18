@@ -4,7 +4,7 @@
 
 # This debootstrap version is too old to have artful, but luckily these scripts
 # have not changed
-ln -s gutsy /usr/share/debootstrap/scripts/artful
+ln -f -s gutsy /usr/share/debootstrap/scripts/artful
 
 # TODO
 # - should we hardcode the arch?

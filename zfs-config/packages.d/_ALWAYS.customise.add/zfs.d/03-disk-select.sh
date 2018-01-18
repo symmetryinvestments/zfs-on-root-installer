@@ -96,7 +96,7 @@ echo "$ZFS_VDEVS"
 echo
 
 read -n1 -p "OK? (y|n)" OK
-if [ "$OK" == "n" ]; then
+if [ "$OK" != "y" ]; then
     echo
     read -e -p "Partition: " ZFS_DISKS
     echo
