@@ -3,6 +3,7 @@
 
 htop
 screen
+less
 
 debootstrap
 gdisk
