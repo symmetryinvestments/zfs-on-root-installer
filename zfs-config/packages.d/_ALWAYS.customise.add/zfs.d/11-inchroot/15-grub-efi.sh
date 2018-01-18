@@ -9,11 +9,23 @@
 
 # for now, just take the first part9
 PART=$(find /dev/disk/by-id/|grep -- -part9 |head -1)
-PARTUUID=$(blkid -s PARTUUID -o value $PART)
+if [ -z "$PART" ]; then
+    echo ERROR: could not find EFS partition
+    false
+fi
+echo Found EFS partition: $PART
 
+wipefs -a $PART
 mkdosfs -F 32 -n EFS $PART
+UUID=$(blkid -s UUID -o value $PART)
+if [ -z "$UUID" ]; then
+    echo ERROR: could not find UUID of EFS partition
+    false
+fi
+echo Found EFS partition UUID: $UUID
+
 mkdir -p /boot/efi
-echo "PARTUUID=$PARTUUID /boot/efi vfat defaults 0 1" >> /etc/fstab
+echo "UUID=$UUID /boot/efi vfat defaults 0 1" >> /etc/fstab
 mount /boot/efi
 grub-install --target=x86_64-efi --efi-directory=/boot/efi
 
