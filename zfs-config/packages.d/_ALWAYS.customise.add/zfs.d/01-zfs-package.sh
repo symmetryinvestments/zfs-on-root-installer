@@ -11,7 +11,10 @@
 # - add support for doing a hacky package install at build time and use that
 # 
 
-apt update
-apt download zfsutils-linux
-dpkg -x zfsutils-linux*.deb /
-
+# Download the zfs utils if they are not installed in the image already
+if [ ! -x "/sbin/zpool" ]; then
+    apt update
+    apt download zfsutils-linux
+    dpkg -x zfsutils-linux*.deb /
+    # rm -f zfsutils-linux*.deb
+fi
