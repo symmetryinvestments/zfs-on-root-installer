@@ -3,9 +3,10 @@
 # This script is a wrapper around the individual ZFS full system install
 # scripts - located in /zfs.d
 
-echo WARNING: this will destroy your system
+set -e
 
 for i in /zfs.d/*.sh; do
+    echo Starting script $i:
     . $i
 done
 

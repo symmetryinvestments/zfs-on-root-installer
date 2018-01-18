@@ -5,9 +5,15 @@
 # partition 9 is the final 550Meg of the disk and allocated to the EFS
 # partition 1 is the remainder of the disk and allocated to ZFS
 
+echo "Will nuke partitions on $ZFS_DISKS"
+sleep 5s
+
 for disk in $ZFS_DISKS; do
     sgdisk -Z $disk
-    sgdisk -n9:-550M:0 -t9:C12A7328-F81F-11D2-BA4B-00A0C93EC93B -N1 -t1:BF01 $disk
+    sgdisk -n9:-550M:0 -t9:EF00 -N1 -t1:BF01 $disk
 done
 
+# FIXME - dont just sleep, wait for the partitions to appear
+echo Sleeping for udev to finish discovering and enumerating
+sleep 10s
 

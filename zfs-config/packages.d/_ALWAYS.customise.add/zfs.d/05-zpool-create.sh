@@ -12,7 +12,7 @@ zpool create -f \
     -O normalization=formD \
     -O mountpoint=/ \
     -R /mnt \
-    $RPOOL \
+    $ROOT_POOL \
     $ZFS_PAIR1 \
     $ZFS_PAIR2 \
     $ZFS_PAIR3

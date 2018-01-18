@@ -2,6 +2,7 @@
 # 
 
 htop
+screen
 
 debootstrap
 gdisk
