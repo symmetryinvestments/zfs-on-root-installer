@@ -12,6 +12,6 @@ mount --rbind /sys  /mnt/sys
 chroot /mnt /zfs.install
 
 # some mounts may have been added during this process
-umount -a
+umount -v -R -l /mnt
 
 

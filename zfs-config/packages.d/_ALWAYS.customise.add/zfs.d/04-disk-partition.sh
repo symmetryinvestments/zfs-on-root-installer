@@ -5,7 +5,8 @@
 # partition 9 is the final 550Meg of the disk and allocated to the EFS
 # partition 1 is the remainder of the disk and allocated to ZFS
 
-echo "Will nuke partitions on $ZFS_DISKS"
+echo "Will nuke partitions on:
+echo "$ZFS_DISKS"
 sleep 5s
 
 for disk in $ZFS_DISKS; do

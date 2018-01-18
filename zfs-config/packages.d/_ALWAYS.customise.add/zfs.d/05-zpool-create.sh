@@ -2,7 +2,10 @@
 # Create the initial zpool
 #
 
+# TODO - bikeshed this name?
 ROOT_POOL=zpool
+
+
 
 zpool create -f \
     -O atime=off \
@@ -13,9 +16,7 @@ zpool create -f \
     -O mountpoint=/ \
     -R /mnt \
     $ROOT_POOL \
-    $ZFS_PAIR1 \
-    $ZFS_PAIR2 \
-    $ZFS_PAIR3
+    $ZFS_VDEVS
 
 
 

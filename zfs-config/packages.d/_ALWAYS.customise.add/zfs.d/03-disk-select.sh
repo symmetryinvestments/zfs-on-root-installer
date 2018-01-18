@@ -14,64 +14,100 @@
 # sort by size, then by connection path
 # select into pairs of same sized disks (within 5% size)
 
-echo "FIXME - this is terribly manual, in the future it will not be"
-echo ""
-echo "Please use /dev/disk/by-id/wwn-0x*-part1 style names"
-echo "Each pair line will be turned into a mirror set"
-echo
-lsblk -o "NAME,LABEL,MODEL,SIZE,WWN"
+# FIXME - should functions be all in one common place?
 
-ROTATIONAL=
-pushd /sys/block
-for dev in *; do
-    case "$dev" in
-        loop*|sr*|fd*) ;;
-        *)
-            if [ $(cat "$dev/queue/rotational") == '1' ]; then
-                ROTATIONAL+=" $dev"
-            fi
-            ;;
-    esac
-done
-popd
-echo ROTATIONAL=$ROTATIONAL
+# Given the bare name of a block device, output first matching disk/by-id name
+bdev_find_name() {
+    local dev="$1"
+    local id
 
-ROTATIONAL_WWN=
-for dev in $ROTATIONAL; do
-    for id in /dev/disk/by-id/wwn-*; do
+    for id in /dev/disk/by-id/*; do
         if [ $(readlink $id) == "../../$dev" ]; then
-            ROTATIONAL_WWN+=" $id"
+            echo "$id"
+            return 0
         fi
     done
-    # TODO - what if there is no wwn?
-done
-echo ROTATIONAL_WWN=$ROTATIONAL_WWN
+
+    # No ID links, just use /dev name
+    echo "/dev/$dev"
+    return 0
+}
+
+# Output a list of block devs, using the best symbolic name for each
+bdev_best_name() {
+    lsblk -n -b -d -o NAME,WWN -e 11 -r | while read dev wwn; do
+        # if possible, use the WWN name
+        dev_wwn="/dev/disk/by-id/wwn-$wwn"
+        if [ "$(readlink $dev_wwn)" == "../../$dev" ]; then
+            echo "$dev_wwn"
+            continue
+        fi
+
+        # No WWN, look for any ID link
+        bdev_find_name "$dev"
+    done
+}
+
+# Given a list of block devs, output only the rotational ones
+bdev_only_rotating() {
+    for dev in $*; do
+        if [ "$(lsblk -n -b -d -o ROTA -r $dev)" == "1" ]; then
+            echo $dev
+        fi
+    done
+}
+
+# Naive mirror pairing
+# Given a list of block devs, try to pair them off for mirrorsets
+bdev_to_pairs() {
+    prev_size=0
+    prev_name=none
+    for dev in $*; do
+        size=$(lsblk -n -b -d -o SIZE -r "$dev")
+
+        # FIXME - should allow 5% slop when comparing
+        if [ "$size" == "$prev_size" ]; then
+            # TODO - assumes "-part1"
+            echo "mirror ${prev_name}-part1 ${dev}-part1"
+            prev_size=0
+            prev_name=none
+            continue
+        fi
+        prev_size="$size"
+        prev_name="$dev"
+    done
+}
+
+echo "FIXME - this is terribly manual, in the future it will not be"
+echo
+lsblk -n -d -e 11 -o "NAME,MODEL,SIZE,WWN"
+
+BDEV="$(bdev_best_name)"
+
+ZFS_DISKS="$(bdev_only_rotating $BDEV)"
+ZFS_VDEVS="$(bdev_to_pairs $ZFS_DISKS)"
 
 echo
-read -p "Pair1: " -e ZFS_PAIR1
-read -p "Pair2: " -e ZFS_PAIR2
-read -p "Pair3: " -e ZFS_PAIR3
+echo "Disks to create partitions on:"
+echo "$ZFS_DISKS"
+echo
+echo "ZFS Vdevs to create:"
+echo "$ZFS_VDEVS"
+echo
 
-ZFS_DISKS="$ZFS_PAIR1 $ZFS_PAIR2 $ZFS_PAIR3"
+read -n1 -p "OK? (y|n)" OK
+if [ "$OK" == "n" ]; then
+    echo
+    read -e -p "Partition: " ZFS_DISKS
+    echo
+    read -e -p "vdevs: " ZFS_VDEVS
+fi
+echo
 
-for dev in $ZFS_DISKS; do
-    if [ ! -e "$dev" ]; then
-        echo "ERROR: $dev does not exist"
-        exit 1
-    fi
-
-    case "$dev" in
-        /dev/disk/by-id/wwn-*)
-            ;;
-        *)
-            echo "WARNING: $dev is not a WWN"
-            ;;
-    esac
-done
 
 # TODO
 # - ensure that /dev/disk/by-id/wwn* style names are used for the ZFS_PAIRn
 #   unless one does not exist
-# - automate discovery and suggested layout..
+# - better automation of discovery and suggested layout
 
 
