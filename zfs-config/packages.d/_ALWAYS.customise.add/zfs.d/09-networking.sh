@@ -5,7 +5,7 @@
 mkdir -p /mnt/etc/systemd/system/multi-user.target.wants/
 
 # enable systemd-networkd and systemd-resolved
-cp -a /etc/systemd/system/multi-user.target.wants/ /mnt/etc/systemd/system/multi-user.target.wants/
+cp -a /etc/systemd/system/multi-user.target.wants/* /mnt/etc/systemd/system/multi-user.target.wants/
 
 # Add a default config for ethernet devices
 cp -a /etc/systemd/network/95-defaulteth.network /mnt/etc/systemd/network/
