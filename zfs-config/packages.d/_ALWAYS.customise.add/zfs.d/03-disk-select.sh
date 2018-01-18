@@ -95,7 +95,8 @@ echo "ZFS Vdevs to create:"
 echo "$ZFS_VDEVS"
 echo
 
-read -n1 -p "OK? (y|n)" OK
+# TODO - provide a way to specify not to wait (for fully automated installs)
+read -p "OK? (y|n)" OK
 if [ "$OK" != "y" ]; then
     echo
     read -e -p "Partition: " ZFS_DISKS
