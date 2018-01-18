@@ -11,7 +11,8 @@ mount --rbind /sys  /mnt/sys
 
 chroot /mnt /zfs.install
 
-# some mounts may have been added during this process
-umount -v -R -l /mnt
+# Cannot force remove the mounts, that breaks systemd in the ramdisk
+## some mounts may have been added during this process
+#umount -v -R -l /mnt
 
 
