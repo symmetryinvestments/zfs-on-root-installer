@@ -6,5 +6,5 @@
 CONFIG_LOCALE="en_HK.UTF-8"
 
 locale-gen $CONFIG_LOCALE
-echo 'LANG="$CONFIG_LOCALE"' > /etc/default/locale
+echo "LANG=\"$CONFIG_LOCALE\"" > /etc/default/locale
 
