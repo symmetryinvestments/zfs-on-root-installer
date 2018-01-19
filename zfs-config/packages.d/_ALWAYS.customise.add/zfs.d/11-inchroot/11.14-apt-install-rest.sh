@@ -2,7 +2,6 @@
 # Install any remaining packages
 #
 
-apt install -y aptitude
 apt remove -y nplan
 
 # FIXME
