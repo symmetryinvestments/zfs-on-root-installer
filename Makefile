@@ -68,32 +68,40 @@ $(ISO_IMAGE): $(DISK_IMAGE)
 	    --efi-boot $(notdir $(DISK_IMAGE)) \
 	    $(ISODIR)
 
+QEMU_CMD := qemu-system-x86_64 -enable-kvm \
+    -m 1024 \
+    -netdev type=user,id=e0 -device virtio-net-pci,netdev=e0
+
+QEMU_ISO_CMD := $(QEMU_CMD) \
+    -bios /usr/share/OVMF/OVMF_CODE.fd \
+    -cdrom $(ISO_IMAGE)
+
 # Just build the initramfs and boot it directly
 test_quick: combined.initrd kernel/ubuntu.amd64.kernel
-	qemu-system-x86_64 -enable-kvm -append console=ttyS0 \
-	    -m 1024 \
+	$(QEMU_CMD) \
+	    -append console=ttyS0 \
 	    -kernel kernel/ubuntu.amd64.kernel \
 	    -initrd combined.initrd \
-	    -netdev type=user,id=e0 -device virtio-net-pci,netdev=e0 \
 	    -nographic
 
 # Test the EFI boot
 test_efi: $(ISO_IMAGE)
-	qemu-system-x86_64 -enable-kvm \
-	    -bios /usr/share/OVMF/OVMF_CODE.fd \
-	    -m 1024 \
-	    -netdev type=user,id=e0 -device virtio-net-pci,netdev=e0 \
-	    -cdrom $(ISO_IMAGE) \
+	$(QEMU_ISO_CMD) \
 	    -nographic
 
 # Test EFI booting, with an actual graphics console visible
 test_efigui: $(ISO_IMAGE)
-	qemu-system-x86_64 -enable-kvm \
-	    -bios /usr/share/OVMF/OVMF_CODE.fd \
-	    -m 1024 \
-	    -netdev type=user,id=e0 -device virtio-net-pci,netdev=e0 \
-	    -cdrom $(ISO_IMAGE) \
+	$(QEMU_ISO_CMD) \
 	    -serial vc -serial stdio
+
+persistant.storage:
+	truncate $@ --size=2G
+REALLYCLEAN_FILES += persistant.storage
+
+test_efigui_persist: $(ISO_IMAGE) persistant.storage
+	$(QEMU_ISO_CMD) \
+	    -serial vc -serial stdio \
+	    -drive if=virtio,format=raw,file=persistant.storage
 
 clean:
 	$(foreach dir,$(SUBDIRS),$(MAKE) -C $(dir) $@ &&) true
@@ -101,3 +109,4 @@ clean:
 
 reallyclean:
 	$(foreach dir,$(SUBDIRS),$(MAKE) -C $(dir) $@ &&) true
+	rm -f $(REALLYCLEAN_FILES)

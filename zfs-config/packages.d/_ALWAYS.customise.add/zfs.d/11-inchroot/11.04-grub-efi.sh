@@ -9,6 +9,12 @@
 
 # for now, just take the first part9
 PART=$(find /dev/disk/by-id/|grep -- -part9 |head -1)
+
+# systems that don't have disk id labels (eg: a virtio disks)
+if [ -z "$PART" ]; then
+    PART=$(lsblk -d -e 2 -e 11 -o NAME -n |grep 9$ |head -1)
+fi
+
 if [ -z "$PART" ]; then
     echo ERROR: could not find EFS partition
     false
