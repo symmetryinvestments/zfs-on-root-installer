@@ -26,7 +26,7 @@ DISK_IMAGE := $(ISODIR)/boot.img
 ISO_IMAGE := boot.iso
 PART_SIZE_MEGS = 200
 
-build-depends:
+build-depends: debian/Makefile
 	$(foreach dir,$(SUBDIRS),$(MAKE) -C $(dir) $@ &&) true
 	sudo apt install ovmf isolinux xorriso
 
