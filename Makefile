@@ -95,7 +95,7 @@ test_efigui: $(ISO_IMAGE)
 	    -serial vc -serial stdio
 
 persistant.storage:
-	truncate $@ --size=2G
+	truncate $@ --size=10G
 REALLYCLEAN_FILES += persistant.storage
 
 test_efigui_persist: $(ISO_IMAGE) persistant.storage
