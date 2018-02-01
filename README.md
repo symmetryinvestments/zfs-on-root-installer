@@ -13,8 +13,33 @@ Using the installer image
 
 1) build the image (see the below section on building)
 2) Boot the image (using one of the boot options below)
-3) Login
+3) Login to the installer environment (using an option from How to Login below)
 4) Install
+
+Install
+-------
+
+The ZFS installer script is started by running /zfs.install
+
+It will detect your storage devices and suggest a ZFS layout
+
+Either accept the suggestions or enter your own
+
+Once the install is complete, you will be prompted to reboot
+
+
+
+How to Login
+============
+
+Network
+-------
+
+Serial Console
+--------------
+
+Local VGA Screen
+----------------
 
 
 Ways to Boot
@@ -36,6 +61,15 @@ the stick as if it was a cdrom, so the most compatible method is to write the
 boot image to the usb stick.
 
 Use dd (or similar) to write iso/boot.img to your USB Stick.
+
+Some notes on UEFI
+------------------
+
+The install image is a EFI bootable disk, and this may require you
+to change your firmware boot order to select the installer.  The boot
+image has a startup.nsh file that tells the EFI Shell the file to load
+and the parameters to use in order to boot (This is the place where the
+serial console is specified)
 
 Booting with PXEboot
 --------------------
