@@ -1,5 +1,0 @@
-Build a bootable UEFI image that allows installing a full bare system with
-ZFS disks.
-
-Uses the Ubuntu kernel and a minimal ramdisk builder to host the scripts
-used to perform the actual install.
