@@ -10,8 +10,11 @@ echo "$ZFS_DISKS"
 sleep 5s
 
 for disk in $ZFS_DISKS; do
-    sgdisk -Z $disk
-    sgdisk -n9:-550M:0 -t9:EF00 -N1 -t1:BF01 $disk
+    sgdisk --zap-all $disk
+    sgdisk \
+        --new=9:-550M:0 --typecode=9:EF00 \
+        --largest-new=1 --typecode=1:BF01 \
+        $disk
 done
 
 # FIXME - dont just sleep, wait for the partitions to appear
