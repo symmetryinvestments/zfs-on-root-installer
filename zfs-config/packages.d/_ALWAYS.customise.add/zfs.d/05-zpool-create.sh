@@ -2,8 +2,7 @@
 # Create the initial zpool
 #
 
-# TODO - bikeshed this name?
-export CONFIG_POOL=zpool
+export CONFIG_POOL=tank
 
 
 
