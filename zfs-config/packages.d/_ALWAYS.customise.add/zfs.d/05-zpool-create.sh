@@ -14,7 +14,7 @@ zpool create -f \
     -O normalization=formD \
     -O mountpoint=/ \
     -R /mnt \
-    $ROOT_POOL \
+    $CONFIG_POOL \
     $ZFS_VDEVS
 
 
