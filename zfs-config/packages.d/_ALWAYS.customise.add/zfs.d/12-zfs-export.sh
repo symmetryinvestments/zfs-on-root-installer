@@ -2,6 +2,6 @@
 # "Export", or unmount the ZFS filesystem
 #
 
-zpool export $ROOT_POOL || true
+zpool export $CONFIG_POOL || true
 
 

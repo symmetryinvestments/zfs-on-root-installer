@@ -3,7 +3,7 @@
 #
 
 # TODO - bikeshed this name?
-export ROOT_POOL=zpool
+export CONFIG_POOL=zpool
 
 
 

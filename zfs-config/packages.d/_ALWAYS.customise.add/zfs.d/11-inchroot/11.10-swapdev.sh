@@ -9,7 +9,7 @@
 #    -o primarycache=metadata \
 #    -o secondarycache=none \
 #    -o com.sun:auto-snapshot=false \
-#    $ROOT_POOL/swap
+#    $CONFIG_POOL/swap
 #
 ## FIXME - detect the blockdev name
 #mkswap -L swap /dev/zd0
