@@ -31,9 +31,10 @@ fi
 echo Found EFS partition UUID: $UUID
 
 mkdir -p /boot/efi
-echo "UUID=$UUID /boot/efi vfat defaults 0 1" >> /etc/fstab
+echo "UUID=$UUID /boot/efi vfat nofail,x-systemd.device-timeout=1 0 1" >> /etc/fstab
 mount /boot/efi
-grub-install --target=x86_64-efi --efi-directory=/boot/efi
+grub-install --target=x86_64-efi --efi-directory=/boot/efi \
+    --bootloader-id=ubuntu --recheck --no-floppy
 
 # TODO
 # - need to duplicate this to all other EFS partitions
