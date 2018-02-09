@@ -8,7 +8,7 @@
 # Disks:
 # we want mirrored pairs
 # we want the main ZFS data to reside on spinning rust (SSD for SLOG/Cache)
-# we want to have redundant EFS partitions (FIXME - A mirror?)
+# we want to have redundant ESP partitions (FIXME - A mirror?)
 
 # Create list of rotational disks
 # sort by size, then by connection path

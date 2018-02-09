@@ -2,7 +2,7 @@
 # Nuke the partition tables on the given disks
 #
 # Creates two partitions on each disk
-# partition 9 is the final 550Meg of the disk and allocated to the EFS
+# partition 9 is the final 550Meg of the disk and allocated to the ESP
 # partition 1 is the remainder of the disk and allocated to ZFS
 
 echo "Will nuke partitions on:"

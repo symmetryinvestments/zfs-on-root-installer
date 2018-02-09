@@ -1,10 +1,10 @@
 #
-# Install the grub bootloader to an EFS partition
+# Install the grub bootloader to an ESP partition
 #
 
 # FIXME
-# - lsblk doesnt find any EFS partitions when run inside the chroot ?!?!
-# figure out which partitions are EFS
+# - lsblk doesnt find any ESP partitions when run inside the chroot ?!?!
+# figure out which partitions are ESP
 #PARTS=$(lsblk -r -o "name,parttype" |grep c12a7328-f81f-11d2-ba4b-00a0c93ec93b)
 
 # for now, just take the first part9
@@ -16,19 +16,19 @@ if [ -z "$PART" ]; then
 fi
 
 if [ -z "$PART" ]; then
-    echo ERROR: could not find EFS partition
+    echo ERROR: could not find ESP partition
     false
 fi
-echo Found EFS partition: $PART
+echo Found ESP partition: $PART
 
 wipefs -a $PART
-mkdosfs -F 32 -n EFS $PART
+mkdosfs -F 32 -n ESP $PART
 UUID=$(blkid -s UUID -o value $PART)
 if [ -z "$UUID" ]; then
-    echo ERROR: could not find UUID of EFS partition
+    echo ERROR: could not find UUID of ESP partition
     false
 fi
-echo Found EFS partition UUID: $UUID
+echo Found ESP partition UUID: $UUID
 
 mkdir -p /boot/efi
 echo "UUID=$UUID /boot/efi vfat nofail,x-systemd.device-timeout=1 0 1" >> /etc/fstab
@@ -37,7 +37,7 @@ grub-install --target=x86_64-efi --efi-directory=/boot/efi \
     --bootloader-id=ubuntu --recheck --no-floppy
 
 # TODO
-# - need to duplicate this to all other EFS partitions
+# - need to duplicate this to all other ESP partitions
 # - thus should mount it with something other than the PARTUUID
 # - could benefit by creating a mirrorset..
 # - 
