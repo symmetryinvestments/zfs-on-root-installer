@@ -35,6 +35,7 @@ echo "UUID=$UUID /boot/efi vfat nofail,x-systemd.device-timeout=1 0 1" >> /etc/f
 mount /boot/efi
 grub-install --target=x86_64-efi --efi-directory=/boot/efi \
     --bootloader-id=ubuntu --recheck --no-floppy
+umount /boot/efi
 
 # TODO
 # - need to duplicate this to all other ESP partitions
