@@ -5,8 +5,15 @@
 cp -a /zfs.d/11-inchroot /mnt/zfs.d
 cp -a /zfs.install /mnt
 
-mount --rbind /dev  /mnt/dev
-mount --rbind /proc /mnt/proc
-mount --rbind /sys  /mnt/sys
+mount -t devtmpfs none /mnt/dev
+mount -t devpts none /mnt/dev/pts
+mount -t proc none /mnt/proc
+mount -t sysfs none /mnt/sys
 
 chroot /mnt /zfs.install
+
+umount /mnt/dev/pts
+umount /mnt/dev
+umount /mnt/proc
+umount /mnt/sys
+
