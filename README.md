@@ -132,6 +132,7 @@ test_efigui         - Boot via EFI with a graphic console.  This is
 
 test_efigui_persist - The same as "test_efigui" with the addition of
     a virtual hard drive.  This can be used to test running the ZFS
-    installer scripts.  The virtual hard drive is only created if it is
-    missing, so it will persist between test runs (if this is not desired,
-    either delete the file manually, or run "make reallyclean".
+    installer scripts to completion and then booting the installed system.
+    The virtual hard drive is only created if it is missing, so it will
+    persist between test runs (if this is not desired, either delete the
+    file manually, or run "make reallyclean".
