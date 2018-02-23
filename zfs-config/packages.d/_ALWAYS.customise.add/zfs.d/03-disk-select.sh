@@ -36,8 +36,20 @@ bdev_find_name() {
 # Output a list of block devs, using the best symbolic name for each
 bdev_best_name() {
     lsblk -n -b -d -o NAME,WWN -e 11 -r | while read dev wwn; do
+        # floppy disks? who has them any more?
+        if [ "$dev" == "fd0" ]; then
+            continue
+        fi
+
         # if possible, use the WWN name
         dev_wwn="/dev/disk/by-id/wwn-$wwn"
+        if [ "$(readlink $dev_wwn)" == "../../$dev" ]; then
+            echo "$dev_wwn"
+            continue
+        fi
+
+        # next, try the NVME version of a WWN
+        dev_wwn="/dev/disk/by-id/nvme-$wwn"
         if [ "$(readlink $dev_wwn)" == "../../$dev" ]; then
             echo "$dev_wwn"
             continue
@@ -85,7 +97,24 @@ lsblk -n -d -e 11 -o "NAME,MODEL,SIZE,WWN"
 BDEV="$(bdev_best_name)"
 
 ZFS_DISKS="$(bdev_only_rotating $BDEV)"
+
+# if there are no rotating disks, just try them all
+if [ -z "$ZFS_DISKS" ]; then
+    ZFS_DISKS="$BDEV"
+fi
+
 ZFS_VDEVS="$(bdev_to_pairs $ZFS_DISKS)"
+
+# If we could not pair them off
+if [ -z "$ZFS_VDEVS" ]; then
+    # some special cases for the expected places we need this
+    case "$ZFS_DISKS" in
+        /dev/vda)
+            ZFS_VDEVS=${ZFS_DISKS}1 ;;
+        /dev/disk/by-id/*)
+            ZFS_VDEVS=${ZFS_DISKS}-part1 ;;
+    esac
+fi
 
 echo
 echo "Disks to create partitions on:"
