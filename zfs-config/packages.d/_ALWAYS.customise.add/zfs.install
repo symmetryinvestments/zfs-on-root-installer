@@ -5,9 +5,16 @@
 
 set -e
 
+if [ -e /zfs.lock ]; then
+    echo "Install already in progress (lock file /zfs.lock exists)"
+    exit 1
+fi
+touch /zfs.lock
+
 for i in /zfs.d/*.sh; do
     echo Starting script $i:
     . $i
 done
 
+rm /zfs.lock
 
