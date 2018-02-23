@@ -87,7 +87,8 @@ test_quick: combined.initrd kernel/ubuntu.amd64.kernel
 # Test the EFI boot
 test_efi: $(ISO_IMAGE)
 	$(QEMU_ISO_CMD) \
-	    -nographic
+	    -display none \
+	    -serial null -serial stdio
 
 # Test EFI booting, with an actual graphics console visible
 test_efigui: $(ISO_IMAGE)
