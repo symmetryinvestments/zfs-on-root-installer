@@ -3,13 +3,12 @@ Description=Simple status page
 #After=getty@tty2.service
 
 [Service]
-Type=idle
-ExecStart=/usr/bin/htop
+Type=simple
+ExecStart=/usr/local/sbin/statuspage
 StandardInput=tty
 TTYPath=/dev/tty1
 TTYReset=yes
 TTYVHangup=yes
-Environment="HTOPRC=/etc/htoprc.big"
 Restart=always
 
 [Install]
