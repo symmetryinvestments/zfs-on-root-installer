@@ -4,9 +4,11 @@
 htop
 screen
 less
+dialog
 
 debootstrap
 gdisk
+nwipe
 
 libnvpair1linux libzpool2linux libzfs2linux
 
@@ -19,3 +21,4 @@ libnvpair1linux libzpool2linux libzfs2linux
 
 # ensure we can verify the ubuntu package signatures
 ubuntu-archive-keyring
+
