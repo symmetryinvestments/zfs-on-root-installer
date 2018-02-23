@@ -3,3 +3,6 @@
 combined.initrd
 iso/
 boot.iso
+
+# Large file
+persistant.storage
