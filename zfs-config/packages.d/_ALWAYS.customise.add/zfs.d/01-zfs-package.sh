@@ -17,4 +17,10 @@ if [ ! -x "/sbin/zpool" ]; then
     apt download zfsutils-linux
     dpkg -x zfsutils-linux*.deb /
     # rm -f zfsutils-linux*.deb
+
+    # we normally dont need to install anything else in the ramdisk, so
+    # cleanup the space used
+    rmdir /var/lib/apt/auxfiles
+    apt clean
+    rm -rf /var/lib/apt/list/*
 fi
