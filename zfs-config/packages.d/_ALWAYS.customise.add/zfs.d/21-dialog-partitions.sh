@@ -31,6 +31,6 @@ if [ "$CONFIG_UNATTENDED" != "true" ]; then
 
     ZFS_DISKS=
     for i in `cat $tempfile`; do
-        ZFS_DISKS+=/dev/$i
+        ZFS_DISKS+="/dev/$i "
     done
 fi
