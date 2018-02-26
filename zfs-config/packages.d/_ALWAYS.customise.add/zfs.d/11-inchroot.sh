@@ -17,3 +17,6 @@ umount /mnt/dev
 umount /mnt/proc
 umount /mnt/sys
 
+rm -f /mnt/zfs.install
+rm -rf /mnt/zfs.d
+
