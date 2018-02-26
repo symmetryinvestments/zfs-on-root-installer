@@ -2,6 +2,5 @@
 # Set the root user passwd
 #
 
-# FIXME - dont hardcode this
-echo -e root:root | chpasswd
+echo -e root:$CONFIG_ROOT_PW | chpasswd
 

@@ -10,10 +10,15 @@ export CONFIG_POOL=tank
 export CONFIG_LOCALE="en_HK.UTF-8"
 export CONFIG_TIMEZONE="Asia/Hong_Kong"
 export CONFIG_DESKTOP=
+export CONFIG_ROOT_PW=root
 
+# local user to create - not expected to be set in the defaults, but eg:
+#export CONFIG_USER=username
+#export CONFIG_USER_FN="Hamish Coleman"
+#export CONFIG_USER_PW=xyzzy
+
+# Things setup by the disk plan:
 # disks to zap and partition
+#   ZFS_DISKS
 # layout of zfs pool
-
-# local user to create
-
-
+#   ZFS_VDEVS

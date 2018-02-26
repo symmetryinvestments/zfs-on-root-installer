@@ -10,7 +10,8 @@ mount -t devpts none /mnt/dev/pts
 mount -t proc none /mnt/proc
 mount -t sysfs none /mnt/sys
 
-chroot /mnt /zfs.install
+S=0
+script_prefix=inchroot chroot /mnt /zfs.install || S=$?
 
 umount /mnt/dev/pts
 umount /mnt/dev
@@ -20,3 +21,8 @@ umount /mnt/sys
 rm -f /mnt/zfs.install
 rm -rf /mnt/zfs.d
 
+if [ "$S" -ne 0 ]; then
+    # cause an exit, but only /after/ we have cleaned up
+    echo "ERROR: something in the chroot exited with an error ($S)"
+    false
+fi
