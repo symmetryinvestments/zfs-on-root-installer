@@ -5,5 +5,6 @@
 apt update
 apt install --yes linux-image-generic wget vim \
     zfs-initramfs dosfstools grub-efi-amd64 \
-    aptitude
+    aptitude openssh-server
 
+# nano?
