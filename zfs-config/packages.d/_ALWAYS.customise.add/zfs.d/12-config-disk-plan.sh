@@ -124,20 +124,5 @@ echo "ZFS Vdevs to create:"
 echo "$ZFS_VDEVS"
 echo
 
-# TODO - provide a way to specify not to wait (for fully automated installs)
-read -p "OK? (y|n)" OK
-if [ "$OK" != "y" ]; then
-    echo
-    read -e -p "Partition: " ZFS_DISKS
-    echo
-    read -e -p "vdevs: " ZFS_VDEVS
-fi
-echo
-
-
 # TODO
-# - ensure that /dev/disk/by-id/wwn* style names are used for the ZFS_PAIRn
-#   unless one does not exist
 # - better automation of discovery and suggested layout
-
-
