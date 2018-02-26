@@ -2,7 +2,7 @@
 # Copy some scripts into the buildroot and setup to execute them in a chroot
 #
 
-cp -a /zfs.d/11-inchroot /mnt/zfs.d
+cp -a /zfs.d/inchroot /mnt/zfs.d
 cp -a /zfs.install /mnt
 
 mount -t devtmpfs none /mnt/dev
