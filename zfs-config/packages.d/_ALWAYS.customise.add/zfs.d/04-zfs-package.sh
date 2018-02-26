@@ -20,7 +20,7 @@ if [ ! -x "/sbin/zpool" ]; then
 
     # we normally dont need to install anything else in the ramdisk, so
     # cleanup the space used
-    rmdir /var/lib/apt/auxfiles
+    rm -rf /var/lib/apt/auxfiles
     apt clean
     rm -rf /var/lib/apt/list/*
 fi
