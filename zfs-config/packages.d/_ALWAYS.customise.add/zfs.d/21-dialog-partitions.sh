@@ -6,14 +6,21 @@ if [ "$CONFIG_UNATTENDED" != "true" ]; then
     tempinput=`tempfile`
     tempfile=`tempfile`
 
-    lsblk -n -d -e 11 -o "NAME,MODEL,SIZE,WWN" | while read tag desc; do
+    # TODO
+    # - I would prefer the lsblk output to have sizes in standard SI units
+    #   (as opposed to crazy Gibibytes) but the lsblk program does not obey
+    #   the blocksize var:
+    # export BLOCKSIZE=KB
+
+    bdev_best_name | while read dev; do
+        desc=`lsblk -n -d -e 11 -o "SIZE,NAME,MODEL" $dev`
         state=off
         for i in $ZFS_DISKS; do
-            if [ $(basename $i) == "$tag" ]; then
+            if [ "$i" == "$dev" ]; then
                 state=on
             fi
         done
-        echo $tag \"$desc\" $state >>$tempinput
+        echo $dev \"$desc\" $state >>$tempinput
     done
 
     dialog \
@@ -29,8 +36,5 @@ if [ "$CONFIG_UNATTENDED" != "true" ]; then
         exit 1
     fi
 
-    ZFS_DISKS=
-    for i in `cat $tempfile`; do
-        ZFS_DISKS+="/dev/$i "
-    done
+    ZFS_DISKS=`cat $tempfile`
 fi
