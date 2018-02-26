@@ -3,5 +3,5 @@
 #
 
 # FIXME more sources.list
-sed -i -e 's/$/ universe/' /mnt/etc/apt/sources.list
+sed -i -e 's/$/ universe/' /etc/apt/sources.list
 
