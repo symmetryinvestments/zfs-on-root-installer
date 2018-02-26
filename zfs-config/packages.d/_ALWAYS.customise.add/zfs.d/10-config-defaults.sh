@@ -13,6 +13,12 @@ export CONFIG_DESKTOP=
 export CONFIG_PROXY=http://10.16.185.42:3142
 export CONFIG_ROOT_PW=root
 
+# A list of packages to install to turn the system into a desktop
+# environment
+CONFIG_DESKTOP="ubuntu-gnome-desktop"
+# TODO
+# - only set the desktop variable if we are doing an attended install
+
 # TODO
 # - should not set the proxy here, should try and autodetect it
 

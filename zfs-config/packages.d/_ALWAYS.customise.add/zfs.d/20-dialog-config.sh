@@ -4,10 +4,6 @@
 
 
 if [ "$CONFIG_UNATTENDED" != "true" ]; then
-    # A list of packages to install to turn the system into a desktop
-    # environment
-    CONFIG_DESKTOP="ubuntu-gnome-desktop"
-
     tempfile=`tempfile`
 
     dialog \
