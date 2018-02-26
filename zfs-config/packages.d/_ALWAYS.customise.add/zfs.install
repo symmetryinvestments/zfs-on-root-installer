@@ -12,7 +12,7 @@ fi
 touch /zfs.lock
 
 for i in /zfs.d/*.sh; do
-    echo Starting script $i:
+    echo Starting script $script_prefix $i:
     . $i
 done
 
