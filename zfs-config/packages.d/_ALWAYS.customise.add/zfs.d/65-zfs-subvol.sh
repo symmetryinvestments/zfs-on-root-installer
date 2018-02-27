@@ -11,11 +11,19 @@ zfs create -o canmount=off -o setuid=off -o exec=off $CONFIG_POOL/var
 zfs create -o com.sun:auto-snapshot=false $CONFIG_POOL/var/cache
 zfs create $CONFIG_POOL/var/log
 zfs create $CONFIG_POOL/var/spool
+zfs create $CONFIG_POOL/var/stank # TODO - is this just a spelling mistake?
 zfs create -o com.sun:auto-snapshot=false -o exec=on $CONFIG_POOL/var/tmp
 zfs create $CONFIG_POOL/srv
 zfs create $CONFIG_POOL/var/mail
 zfs create -o com.sun:auto-snapshot=false -o mountpoint=/var/lib/nfs $CONFIG_POOL/var/nfs
 chmod 1777 /mnt/var/tmp
+
+# When running on linux/ubuntu/grub, it appears that the environment does not
+# require the bootfs var to be set.  The documentation also says that setting
+# this also causes ZFS to impose some restrictions on the size+shape of the
+# boot filesystem, which we do not want
+#
+# zpool set bootfs=$CONFIG_POOL/ROOT/ubuntu $CONFIG_POOL
 
 zfs set devices=off $CONFIG_POOL
 

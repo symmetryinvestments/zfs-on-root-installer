@@ -6,4 +6,3 @@
 #
 
 update-grub
-
