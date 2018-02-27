@@ -1,7 +1,9 @@
 #
-# Install any remaining packages
+# Install the desktop packages
 #
 
+# TODO
+# - this should be done in the network config section
 apt remove -y nplan
 
 # check if this is to be an interactive system
@@ -12,8 +14,6 @@ if [ -n "$CONFIG_DESKTOP" ]; then
     apt install -y network-manager
     systemctl start NetworkManager
 
-    apt install -y $CONFIG_DESKTOP
+    PACKAGES+=" $CONFIG_DESKTOP"
 fi
 
-# eg:
-# aptitude install ubuntu-desktop network-manager-config-connectivity-ubuntu_
