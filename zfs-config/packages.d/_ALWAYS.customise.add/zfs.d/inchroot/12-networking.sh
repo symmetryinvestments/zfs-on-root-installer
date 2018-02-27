@@ -9,14 +9,16 @@
 # Lets avoid that.
 systemctl mask systemd-networkd-wait-online.service
 
-# TODO
-# - no desktop environments read status from systemd-network properly
-#   so, just use NotworkMangler on desktop installs?
+# no desktop environments currently read the status from systemd-network
+# So, we only configure systemd networkd on server systems
+if [ -z "$CONFIG_DESKTOP" ]; then
 
-systemctl enable systemd-networkd
-systemctl enable systemd-resolved
+    apt remove -y nplan
 
-cat >/etc/systemd/network/95-defaulteth.network <<EOF
+    systemctl enable systemd-networkd
+    systemctl enable systemd-resolved
+
+    cat >/etc/systemd/network/95-defaulteth.network <<EOF
 # By default, all ethernet ports are clients trying to become our upstream
 [Match]
 Name=eth* en*
@@ -29,5 +31,18 @@ LLDP=true
 EmitLLDP=true
 EOF
 
-# Point name services at the systemd-resolved
-echo nameserver 127.0.0.53 >/etc/resolv.conf
+    # Point name services at the systemd-resolved
+    echo nameserver 127.0.0.53 >/etc/resolv.conf
+fi
+
+# If we are running a desktop, thus dont have systemd-networkd (see above)
+# then we will need to tell NotworkMangler to actually manage devices
+if [ -n "$CONFIG_DESKTOP" ]; then
+
+    cat >/etc/netplan/all.yaml <<EOF
+network:
+    version: 2
+    renderer: NetworkManager
+EOF
+
+fi
