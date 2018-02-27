@@ -136,3 +136,9 @@ test_efigui_persist - The same as "test_efigui" with the addition of
     The virtual hard drive is only created if it is missing, so it will
     persist between test runs (if this is not desired, either delete the
     file manually, or run "make reallyclean".
+
+
+ISSUES
+======
+- configure apt proxy settings from install environment to installed environ
+- Ctrl-Left keystroke sequence doesnt work on text console (x11 is OK)
