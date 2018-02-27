@@ -5,6 +5,7 @@
 ZFS_POOL_SCRIPT=/tmp/zfs.zpool.script
 
 cat <<EOF >$ZFS_POOL_SCRIPT
+# This command will assemble the ZFS disk array
 zpool create -f \\
     -O atime=off \\
     -o ashift=12 \\
