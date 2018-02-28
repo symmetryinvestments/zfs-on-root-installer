@@ -86,9 +86,9 @@ disk__add() {
     bn=$(basename "$dev")
     mkdir -p "$DISKDB/$bn"
     disk_set "$bn" dev "$dev"
-    disk_set "$bn" size $(lsblk -n -b -d -o SIZE -r "$dev")
-    disk_set "$bn" rota $(lsblk -n -b -d -o ROTA -r "$dev")
-    disk_set "$bn" model $(lsblk -n -b -d -o MODEL -r "$dev")
+    disk_set "$bn" size "$(lsblk -n -b -d -o SIZE -r "$dev")"
+    disk_set "$bn" rota "$(lsblk -n -b -d -o ROTA -r "$dev")"
+    disk_set "$bn" model "$(lsblk -n -b -d -o MODEL -r "$dev")"
 }
 
 # Given one or more full pathnames for a disk, create structures for them
@@ -101,13 +101,14 @@ disk_add() {
 # Add all the disks in the system to the DISKDB
 disk_add_all() {
     rm -rf "$DISKDB"
+    # shellcheck disable=SC2046
     disk_add $(bdev_best_name)
 }
 
 # Return a list of all disks in the DISKDB
 disk_all() {
     for path in $DISKDB/*; do
-        basename $path
+        basename "$path"
     done
 }
 
@@ -118,7 +119,7 @@ disk_find_nomatch() {
     shift 2
     for dev in "$@"; do
         if [ "$(disk_get "$dev" "$var")" != "$val" ]; then
-            echo $dev
+            echo "$dev"
         fi
     done
 }
@@ -130,7 +131,7 @@ disk_find_match() {
     shift 2
     for dev in "$@"; do
         if [ "$(disk_get "$dev" "$var")" = "$val" ]; then
-            echo $dev
+            echo "$dev"
         fi
     done
 }
@@ -138,6 +139,8 @@ disk_find_match() {
 # Naive mirror pairing
 # Given a list of disks, try to pair them off for mirrorsets
 disk_to_pairs() {
+    # need to be able to return the list of disk names that have been consumed
+    rm -f /tmp/disk_to_pairs.hack
     prev_size=0
     prev_name=none
     for dev in "$@"; do
@@ -147,8 +150,9 @@ disk_to_pairs() {
         if [ "$size" == "$prev_size" ]; then
             # TODO - assumes "-part1"
             echo "mirror ${prev_name}-part1 ${dev}-part1"
-            disk_set $(basename "$prev_name") consumed 1
-            disk_set $(basename "$dev") consumed 1
+            disk_set "$prev_name" consumed 1
+            disk_set "$dev" consumed 1
+            echo "$prev_name $dev" >>/tmp/disk_to_pairs.hack
             prev_size=0
             prev_name=none
             continue
@@ -158,12 +162,55 @@ disk_to_pairs() {
     done
 }
 
+# Look through available disks (in DISKDB) and find all the disks suitable for
+# using as the ZFS main bulk storage
+find_bulk() {
+    local disks disks_rota disks_avail
+    disks="$(disk_all)"
+    # shellcheck disable=SC2086
+    disks_rota="$(disk_find_match rota 1 $disks)"
+
+    if [ -n "$disks_rota" ]; then
+        disks_avail="$disks_rota"
+    else
+        # if there are no rotating disks, just try them all
+        disks_avail="$disks"
+    fi
+
+    # shellcheck disable=SC2086
+    # We actually want to do word splitting on this arg
+    ZFS_VDEVS="$(disk_to_pairs $disks_avail)"
+
+    if [ -n "$ZFS_VDEVS" ]; then
+        # we found some pairs, return with them
+        ZFS_PART_BULKBOOT=$(cat /tmp/disk_to_pairs.hack)
+        return 0
+    fi
+
+    # If we could not pair them off
+    # some special cases for the expected places we need this
+    case "$disks_avail" in
+        vda|sda|hda)
+            ZFS_VDEVS=${disks_avail}1
+            ZFS_PART_BULKBOOT=$disks_avail
+            disk_set "$disks_avail" consumed 1
+            ;;
+        *)
+            ZFS_VDEVS=${disks_avail}-part1
+            ZFS_PART_BULKBOOT=$disks_avail
+            disk_set "$disks_avail" consumed 1
+            ;;
+    esac
+}
+
 # Look through available disks (in DISKDB) and find something suitable for SLOG
 # possibly finding a pair to mirror
 find_slog() {
     local disks disks_avail disks_norota model slog
 
+    # shellcheck disable=SC2046
     disks_avail=$(disk_find_nomatch consumed 1 $(disk_all))
+    # shellcheck disable=SC2086
     disks_norota=$(disk_find_nomatch rota 1 $disks_avail)
 
     disks=
@@ -176,10 +223,12 @@ find_slog() {
                 ;;
         esac
     done
+    # shellcheck disable=SC2086
     slog=$(disk_to_pairs $disks)
 
     if [ -n "$slog" ]; then
-        echo "log $slog"
+        ZFS_VDEVS+=$(echo; echo "log ${slog}")
+        ZFS_PART_SLOG="$(cat /tmp/disk_to_pairs.hack)"
         return 0
     fi
 
@@ -187,11 +236,13 @@ find_slog() {
     for dev in $disks_norota; do
         case "$dev" in
             nvme*)
+                # assume NVME is "fastest" at read speed so reserve for cache
                 continue
                 ;;
         esac
         disk_set "$dev" consumed 1
-        echo "log ${dev}-part1"
+        ZFS_VDEVS+=$(echo; echo "log ${dev}-part1")
+        ZFS_PART_SLOG="$dev"
         return 0
     done
 }
@@ -201,7 +252,9 @@ find_slog() {
 find_cache() {
     local disks_avail disks_norota
 
+    # shellcheck disable=SC2046
     disks_avail=$(disk_find_nomatch consumed 1 $(disk_all))
+    # shellcheck disable=SC2086
     disks_norota=$(disk_find_nomatch rota 1 $disks_avail)
 
     # first, look for a NVME - which we assume is "fastest" for reading
@@ -209,7 +262,8 @@ find_cache() {
         case "$dev" in
             nvme*)
                 disk_set "$dev" consumed 1
-                echo "cache ${dev}-part1"
+                ZFS_VDEVS+=$(echo; echo "cache ${dev}-part1")
+                ZFS_PART_CACHE="$dev"
                 return 0
                 ;;
         esac
@@ -218,7 +272,8 @@ find_cache() {
     # otherwise, just take the first unused SSD
     for dev in $disks_norota; do
         disk_set "$dev" consumed 1
-        echo "cache ${dev}-part1"
+        ZFS_VDEVS+=$(echo; echo "cache ${dev}-part1")
+        ZFS_PART_CACHE="$dev"
         return 0
     done
 }
@@ -226,46 +281,19 @@ find_cache() {
 # initialise the database
 disk_add_all
 
-ZFS_DISKS="$(disk_find_match rota 1 $(disk_all))"
-
-# if there are no rotating disks, just try them all
-if [ -z "$ZFS_DISKS" ]; then
-    ZFS_DISKS="$(disk_all)"
-fi
-
-# shellcheck disable=SC2086
-# We actually want to do word splitting on this arg
-ZFS_VDEVS="$(disk_to_pairs $ZFS_DISKS)"
-
-# If we could not pair them off
-if [ -z "$ZFS_VDEVS" ]; then
-    # some special cases for the expected places we need this
-    case "$ZFS_DISKS" in
-        vda|sda|hda)
-            ZFS_VDEVS=${ZFS_DISKS}1
-            disk_set $(basename "$ZFS_DISKS") consumed 1
-            ;;
-        *)
-            ZFS_VDEVS=${ZFS_DISKS}-part1
-            disk_set $(basename "$ZFS_DISKS") consumed 1
-            ;;
-    esac
-fi
-
-ZFS_SLOG="$(find_slog)"
-ZFS_CACHE="$(find_cache)"
+find_bulk
+find_slog
+find_cache
 
 echo
 echo "Disks to create full sized data partitions and EFS partitions on:"
-echo "$ZFS_DISKS"
+echo "$ZFS_PART_BULKBOOT"
 echo
-# FIXME - add these to the vdev line and add new blah
 echo "Disks to create slog-sized data partitions and use as slog:"
-echo "$ZFS_SLOG"
+echo "$ZFS_PART_SLOG"
 echo
-# FIXME - add these to the vdev line and add new blah
 echo "Disks to create cache-sized data partitions and use as cache:"
-echo "$ZFS_CACHE"
+echo "$ZFS_PART_CACHE"
 echo
 echo "ZFS Vdevs to create:"
 echo "$ZFS_VDEVS"

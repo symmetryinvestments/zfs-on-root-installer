@@ -2,9 +2,11 @@
 # Provide a User interface to set/change the disk config
 #
 
-if [ "$CONFIG_UNATTENDED" != "true" ]; then
+# Given a list of "state=on" disks, create a dialog checklist file with a list
+# of all disks.  Output the name of a tempfile with this list
+disk_checklist() {
+    local used_list="$1"
     tempinput=$(mktemp)
-    tempfile=$(mktemp)
 
     # TODO
     # - I would prefer the lsblk output to have sizes in standard SI units
@@ -12,28 +14,52 @@ if [ "$CONFIG_UNATTENDED" != "true" ]; then
     #   the blocksize var:
     # export BLOCKSIZE=KB
 
-    bdev_best_name | while read -r dev; do
-        desc=$(lsblk -n -d -e 11 -o "SIZE,NAME,MODEL" "$dev")
+    disk_all | while read -r dev; do
+        devpath=$(disk_get "$dev" dev)
+        desc=$(lsblk -n -d -e 11 -o "SIZE,NAME,MODEL" "$devpath")
         state=off
-        for i in $ZFS_DISKS; do
+        for i in $used_list; do
             if [ "$i" == "$dev" ]; then
                 state=on
             fi
         done
         echo "$dev \"$desc\" $state" >>"$tempinput"
     done
+    echo "$tempinput" 
+}
+
+# Show a dialog of disks
+dialog_checklist() {
+    local inputfile="$1"
+    local outputfile="$2"
+    local desc="$3"
 
     if ! dialog \
         --backtitle "ZFS Root Installer" \
         --visit-items \
         --checklist \
-        "Select the disks to wipe and partition for ZFS and ESP" 20 80 16 \
-        --file "$tempinput" \
-        2>"$tempfile"; then
+        "$desc" 20 80 16 \
+        --file "$inputfile" \
+        2>"$outputfile"; then
 
         # assume the user wanted to cancel
         exit 1
     fi
+}
 
-    ZFS_DISKS=$(cat "$tempfile")
+if [ "$CONFIG_UNATTENDED" != "true" ]; then
+    tempinput=$(disk_checklist "$ZFS_PART_BULKBOOT")
+    tempoutput=$(mktemp)
+    dialog_checklist "$tempinput" "$tempoutput" "ZFS data and ESP boot: Marked disks will be wiped and partitioned"
+    ZFS_PART_BULKBOOT=$(cat "$tempoutput")
+
+    tempinput=$(disk_checklist "$ZFS_PART_CACHE")
+    tempoutput=$(mktemp)
+    dialog_checklist "$tempinput" "$tempoutput" "ZFS Cache: Marked disks will be wiped and partitioned"
+    ZFS_PART_CACHE=$(cat "$tempoutput")
+
+    tempinput=$(disk_checklist "$ZFS_PART_SLOG")
+    tempoutput=$(mktemp)
+    dialog_checklist "$tempinput" "$tempoutput" "ZFS SLOG: Marked disks will be wiped and partitioned"
+    ZFS_PART_SLOG=$(cat "$tempoutput")
 fi

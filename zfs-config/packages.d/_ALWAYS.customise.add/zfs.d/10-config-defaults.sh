@@ -29,6 +29,8 @@ CONFIG_DESKTOP="ubuntu-gnome-desktop"
 
 # Things setup by the disk plan:
 # disks to zap and partition
-#   ZFS_DISKS
+#   ZFS_PART_BULKBOOT   - part9 is 550M EFS, part1 is rest
+#   ZFS_PART_CACHE      - part1 is ($ram/2 * 5) in size
+#   ZFS_PART_SLOG       - part1 is 25G in size (assume 4*10gbit traffic per 5s)
 # layout of zfs pool
 #   ZFS_VDEVS
