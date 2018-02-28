@@ -2,8 +2,6 @@
 # Eventually, this script wants to be able to find the disks and create the
 # appropriate ZFS pool creation data
 #
-# For now, just prompt the user
-#
 
 # Disks:
 # we want mirrored pairs
