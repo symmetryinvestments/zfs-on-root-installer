@@ -5,4 +5,4 @@
 # file is not there - no other issues have been seen from missing it (but
 # no complex disk setups were used either)
 
-zpool set cachefile=/etc/zfs/zpool.cache $CONFIG_POOL
+zpool set cachefile=/etc/zfs/zpool.cache "$CONFIG_POOL"

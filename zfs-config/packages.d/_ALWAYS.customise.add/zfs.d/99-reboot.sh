@@ -4,7 +4,7 @@
 
 echo
 echo
-read -p "Install is complete, hit enter to reboot"
+read -r -p "Install is complete, hit enter to reboot"
 
 systemctl reboot
 

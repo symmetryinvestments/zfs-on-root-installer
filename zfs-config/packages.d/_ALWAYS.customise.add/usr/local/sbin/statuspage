@@ -6,21 +6,20 @@
 # First, show the status page
 HTOPRC=/etc/htoprc.big htop
 
-dialog \
+if dialog \
     --timeout 120 \
     --backtitle "ZFS Root Installer" \
     --title "Start ZFS Root installation" \
     --defaultno \
     --yesno "WARNING: Starting the installation process will wipe the \
     contents of your hard drive.    Are you sure you wish to continue" \
-    0 0
+    0 0; then
+    # Only trigger the install if "OK" was pressed
 
-# Only trigger the install if "OK" was pressed
-if [ "$?" -eq 0 ]; then
     script -c /zfs.install /zfs.log
 
     # not actually expected to exit, so pause to show any error messages
     echo Install exited, press enter
-    read x
+    read -r
 fi
 

@@ -19,16 +19,16 @@ if [ -z "$PART" ]; then
     echo ERROR: could not find ESP partition
     false
 fi
-echo Found ESP partition: $PART
+echo "Found ESP partition: $PART"
 
-wipefs -a $PART
-mkdosfs -F 32 -n ESP $PART
-UUID=$(blkid -s UUID -o value $PART)
+wipefs -a "$PART"
+mkdosfs -F 32 -n ESP "$PART"
+UUID=$(blkid -s UUID -o value "$PART")
 if [ -z "$UUID" ]; then
     echo ERROR: could not find UUID of ESP partition
     false
 fi
-echo Found ESP partition UUID: $UUID
+echo "Found ESP partition UUID: $UUID"
 
 mkdir -p /boot/efi
 echo "UUID=$UUID /boot/efi vfat nofail,x-systemd.device-timeout=1 0 1" >> /etc/fstab

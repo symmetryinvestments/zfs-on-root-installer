@@ -104,6 +104,16 @@ test_efigui_persist: $(ISO_IMAGE) persistant.storage
 	    -serial vc -serial stdio \
 	    -drive if=virtio,format=raw,file=persistant.storage
 
+SHELL_SCRIPTS := \
+	zfs-config/packages.d/_ALWAYS.customise.add/usr/local/sbin/statuspage \
+	zfs-config/packages.d/_ALWAYS.customise.add/zfs.install \
+	zfs-config/packages.d/_ALWAYS.customise.add/zfs.d/*.sh \
+	zfs-config/packages.d/_ALWAYS.customise.add/zfs.d/inchroot/*.sh \
+
+# Run a shell linter
+shellcheck:
+	shellcheck --shell bash $(SHELL_SCRIPTS)
+
 clean:
 	$(foreach dir,$(SUBDIRS),$(MAKE) -C $(dir) $@ &&) true
 	rm -f $(CLEAN_FILES)

@@ -20,7 +20,7 @@ bdev_find_name() {
     local id
 
     for id in /dev/disk/by-id/*; do
-        if [ $(readlink $id) == "../../$dev" ]; then
+        if [ "$(readlink "$id")" == "../../$dev" ]; then
             echo "$id"
             return 0
         fi
@@ -33,7 +33,7 @@ bdev_find_name() {
 
 # Output a list of block devs, using the best symbolic name for each
 bdev_best_name() {
-    lsblk -n -b -d -o NAME,WWN -e 11 -r | while read dev wwn; do
+    lsblk -n -b -d -o NAME,WWN -e 11 -r | while read -r dev wwn; do
         # floppy disks? who has them any more?
         if [ "$dev" == "fd0" ]; then
             continue
@@ -41,14 +41,14 @@ bdev_best_name() {
 
         # if possible, use the WWN name
         dev_wwn="/dev/disk/by-id/wwn-$wwn"
-        if [ "$(readlink $dev_wwn)" == "../../$dev" ]; then
+        if [ "$(readlink "$dev_wwn")" == "../../$dev" ]; then
             echo "$dev_wwn"
             continue
         fi
 
         # next, try the NVME version of a WWN
         dev_wwn="/dev/disk/by-id/nvme-$wwn"
-        if [ "$(readlink $dev_wwn)" == "../../$dev" ]; then
+        if [ "$(readlink "$dev_wwn")" == "../../$dev" ]; then
             echo "$dev_wwn"
             continue
         fi
@@ -60,9 +60,9 @@ bdev_best_name() {
 
 # Given a list of block devs, output only the rotational ones
 bdev_only_rotating() {
-    for dev in $*; do
-        if [ "$(lsblk -n -b -d -o ROTA -r $dev)" == "1" ]; then
-            echo $dev
+    for dev in "$@"; do
+        if [ "$(lsblk -n -b -d -o ROTA -r "$dev")" == "1" ]; then
+            echo "$dev"
         fi
     done
 }
@@ -72,7 +72,7 @@ bdev_only_rotating() {
 bdev_to_pairs() {
     prev_size=0
     prev_name=none
-    for dev in $*; do
+    for dev in "$@"; do
         size=$(lsblk -n -b -d -o SIZE -r "$dev")
 
         # FIXME - should allow 5% slop when comparing
@@ -90,6 +90,8 @@ bdev_to_pairs() {
 
 BDEV="$(bdev_best_name)"
 
+# shellcheck disable=SC2086
+# We actually want to do word splitting on this arg
 ZFS_DISKS="$(bdev_only_rotating $BDEV)"
 
 # if there are no rotating disks, just try them all
@@ -97,6 +99,8 @@ if [ -z "$ZFS_DISKS" ]; then
     ZFS_DISKS="$BDEV"
 fi
 
+# shellcheck disable=SC2086
+# We actually want to do word splitting on this arg
 ZFS_VDEVS="$(bdev_to_pairs $ZFS_DISKS)"
 
 # If we could not pair them off
