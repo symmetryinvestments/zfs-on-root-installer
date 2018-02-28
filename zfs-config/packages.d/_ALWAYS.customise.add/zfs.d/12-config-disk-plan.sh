@@ -88,10 +88,6 @@ bdev_to_pairs() {
     done
 }
 
-echo "FIXME - this is terribly manual, in the future it will not be"
-echo
-lsblk -n -d -e 11 -o "NAME,MODEL,SIZE,WWN"
-
 BDEV="$(bdev_best_name)"
 
 ZFS_DISKS="$(bdev_only_rotating $BDEV)"
@@ -115,7 +111,7 @@ if [ -z "$ZFS_VDEVS" ]; then
 fi
 
 echo
-echo "Disks to create partitions on:"
+echo "Disks to create full sized data partitions and EFS partitions on:"
 echo "$ZFS_DISKS"
 echo
 echo "ZFS Vdevs to create:"
