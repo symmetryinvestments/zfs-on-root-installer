@@ -89,6 +89,7 @@ disk__add() {
     disk_set "$bn" size "$(lsblk -n -b -d -o SIZE -r "$dev")"
     disk_set "$bn" rota "$(lsblk -n -b -d -o ROTA -r "$dev")"
     disk_set "$bn" model "$(lsblk -n -b -d -o MODEL -r "$dev")"
+    disk_set "$bn" kname "$(lsblk -n -b -d -o KNAME -r "$dev")"
 }
 
 # Given one or more full pathnames for a disk, create structures for them
@@ -107,9 +108,13 @@ disk_add_all() {
 
 # Return a list of all disks in the DISKDB
 disk_all() {
+    # FIXME
+    # - we really would like to sort by physical port..
     for path in $DISKDB/*; do
-        basename "$path"
-    done
+        name=$(basename "$path")
+        kname=$(disk_get "$name" kname)
+        echo "$kname $name"
+    done |sort |cut -d" " -f2
 }
 
 # Given a var/val pair and a list of disks, find the ones that do not match
