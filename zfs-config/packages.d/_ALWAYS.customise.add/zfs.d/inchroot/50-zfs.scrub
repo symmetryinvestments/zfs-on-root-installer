@@ -2,9 +2,10 @@
 
 which zpool >/dev/null || exit 0
 
-zpool list -H -o health,name 2>&1 | \
-    awk 'BEGIN {FS="\t"} {if ($1 ~ /^ONLINE/) print $2}' | \
-    while read pool ; do
+zpool list -H -o health,name 2>&1 | while read -r state pool; do
+    if [ "$state" != "ONLINE" ]; then
+        continue
+    fi
 
     zpool scrub "$pool"
 done
