@@ -16,10 +16,12 @@ if dialog \
     0 0; then
     # Only trigger the install if "OK" was pressed
 
-    script -c /zfs.install /zfs.log
+    script -a -c /zfs.install /zfs.log
 
     # not actually expected to exit, so pause to show any error messages
     echo Install exited, press enter
-    read -r
+
+    # shellcheck disable=SC2034
+    read -r throwaway
 fi
 
