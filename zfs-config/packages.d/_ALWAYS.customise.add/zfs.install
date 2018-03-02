@@ -12,13 +12,15 @@ fi
 touch /zfs.lock
 
 for i in /zfs.d/*.sh; do
-    # shellcheck disable=SC2154
-    # the variable is set outside this script
-    echo "Starting script $script_prefix $i:"
+    if [ -x "$i" ]; then
+        # shellcheck disable=SC2154
+        # the variable is set outside this script
+        echo "Starting script $script_prefix $i:"
 
-    # shellcheck source=/dev/null
-    # Each of the zfs.d scripts should to be checked by shellcheck separately
-    . "$i"
+        # shellcheck source=/dev/null
+        # all to be checked by shellcheck separately
+        . "$i"
+    fi
 done
 
 rm /zfs.lock
