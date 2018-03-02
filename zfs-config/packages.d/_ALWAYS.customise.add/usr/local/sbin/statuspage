@@ -6,6 +6,11 @@
 # First, show the status page
 HTOPRC=/etc/htoprc.big htop
 
+if [ ! -x /zfs.install ]; then
+    # dont prompt to run the installer if it does not exist
+    exit
+fi
+
 if dialog \
     --timeout 120 \
     --backtitle "ZFS Root Installer" \
