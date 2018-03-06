@@ -23,7 +23,8 @@ sleep 5s
 
 for dev in $ZFS_PART_BULKBOOT $ZFS_PART_CACHE $ZFS_PART_SLOG; do
     disk=$(disk_get "$dev" dev)
-    sgdisk --zap-all "$disk"
+    echo "Zapping $disk"
+    sgdisk --zap-all "$disk" || true
 done
 
 # bootable bulk data partitions
