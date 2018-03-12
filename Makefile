@@ -24,7 +24,6 @@ CONFIG_DEBIAN_VER := stretch
 ISODIR := iso
 DISK_IMAGE := $(ISODIR)/boot.img
 ISO_IMAGE := boot.iso
-PART_SIZE_MEGS = 200
 
 build-depends: debian/Makefile
 	$(foreach dir,$(SUBDIRS),$(MAKE) -C $(dir) $@ &&) true
@@ -51,10 +50,14 @@ kernel/ubuntu.amd64.kernel kernel/ubuntu.amd64.modules.cpio:
 combined.initrd: $(DEBIAN).cpio kernel/ubuntu.amd64.modules.cpio
 	cat $^ >$@
 
-$(DISK_IMAGE): startup.nsh combined.initrd kernel/ubuntu.amd64.kernel
+# Create a file with the size of the needed disk image in it
+size.txt: combined.initrd kernel/ubuntu.amd64.kernel
+	echo $$(($$(stat -c %s combined.initrd)/1048576 +$$(stat -c %s kernel/ubuntu.amd64.kernel)/1048576 +2)) >$@
+
+$(DISK_IMAGE): size.txt startup.nsh combined.initrd kernel/ubuntu.amd64.kernel
 	mkdir -p $(dir $@)
-	truncate --size=$(PART_SIZE_MEGS)M $@.tmp
-	mformat -i $@.tmp -v EFS -N 2 -t $(PART_SIZE_MEGS) -h 64 -s 32 ::
+	truncate --size=$$(cat size.txt)M $@.tmp
+	mformat -i $@.tmp -v EFS -N 2 -t $$(cat size.txt) -h 64 -s 32 ::
 	mmd -i $@.tmp ::efi
 	mmd -i $@.tmp ::efi/boot
 	mcopy -i $@.tmp kernel/ubuntu.amd64.kernel ::linux.efi
