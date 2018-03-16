@@ -9,6 +9,7 @@ dialog
 debootstrap
 gdisk
 nwipe
+mdadm
 
 libnvpair1linux libzpool2linux libzfs2linux
 
