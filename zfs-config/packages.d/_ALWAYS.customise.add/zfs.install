@@ -3,6 +3,11 @@
 # This script is a wrapper around the individual ZFS full system install
 # scripts - located in /zfs.d
 
+if [ "$1" = "--unattended" ]; then
+    shift
+    export CONFIG_UNATTENDED=true
+fi
+
 set -e
 
 if [ -e /zfs.lock ]; then

@@ -4,7 +4,9 @@
 
 echo
 echo
-read -r -p "Install is complete, hit enter to reboot"
+if [ "$CONFIG_UNATTENDED" != "true" ]; then
+    read -r -p "Install is complete, hit enter to reboot"
+fi
 
 systemctl reboot
 

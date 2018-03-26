@@ -2,9 +2,10 @@
 # Set the default values for all the configuration
 #
 
-# In the future, this should be set by the wrapper script
-export CONFIG_UNATTENDED=false
-
+# Unless otherwise set, we assume we are running an attended install
+if [ -z "$CONFIG_UNATTENDED" ]; then
+    export CONFIG_UNATTENDED=false
+fi
 
 export CONFIG_POOL=tank
 export CONFIG_LOCALE="en_HK.UTF-8"
@@ -13,11 +14,11 @@ export CONFIG_DESKTOP=
 export CONFIG_PROXY=http://10.16.185.42:3142
 export CONFIG_ROOT_PW=root
 
-# A list of packages to install to turn the system into a desktop
-# environment
-CONFIG_DESKTOP="ubuntu-gnome-desktop"
-# TODO
-# - only set the desktop variable if we are doing an attended install
+if [ "$CONFIG_UNATTENDED" != "true" ]; then
+    # A list of packages to install to turn the system into a desktop
+    # environment
+    CONFIG_DESKTOP="ubuntu-gnome-desktop"
+fi
 
 # TODO
 # - should not set the proxy here, should try and autodetect it
