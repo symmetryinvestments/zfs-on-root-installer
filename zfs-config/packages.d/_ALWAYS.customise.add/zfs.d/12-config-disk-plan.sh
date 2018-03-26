@@ -111,6 +111,10 @@ disk_all() {
     # FIXME
     # - we really would like to sort by physical port..
     for path in $DISKDB/*; do
+        if [ ! -e "$path" ]; then
+            # This happens if there are no disks
+            continue
+        fi
         name=$(basename "$path")
         kname=$(disk_get "$name" kname)
         echo "$kname $name"
@@ -172,6 +176,12 @@ disk_to_pairs() {
 find_bulk() {
     local disks disks_rota disks_avail
     disks="$(disk_all)"
+
+    if [ -z "$disks" ]; then
+        echo No supported disks detected - cannot run installer
+        false
+    fi
+
     # shellcheck disable=SC2086
     disks_rota="$(disk_find_match rota 1 $disks)"
 
