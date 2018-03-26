@@ -36,9 +36,11 @@ DEBIAN = debian/build/$(DEBIAN_BASENAME)
 # Rules to go and make the debian installed root
 # Note: this has no dependancy checking, and will simply use what ever
 # file is there
-.PHONY: $(DEBIAN).cpio
-$(DEBIAN).cpio: debian/Makefile
+.PHONY: debian
+debian: debian/Makefile
 	$(MAKE) -C debian build/$(DEBIAN_BASENAME).cpio
+
+$(DEBIAN).cpio: debian
 
 # Ensure that the submodule is actually present
 debian/Makefile:
