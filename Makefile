@@ -100,14 +100,14 @@ test_efigui: $(ISO_IMAGE)
 	$(QEMU_ISO_CMD) \
 	    -serial vc -serial stdio
 
-persistant.storage:
+persistent.storage:
 	truncate $@ --size=10G
-REALLYCLEAN_FILES += persistant.storage
+REALLYCLEAN_FILES += persistent.storage
 
-test_efigui_persist: $(ISO_IMAGE) persistant.storage
+test_efigui_persist: $(ISO_IMAGE) persistent.storage
 	$(QEMU_ISO_CMD) \
 	    -serial vc -serial stdio \
-	    -drive if=virtio,format=raw,file=persistant.storage
+	    -drive if=virtio,format=raw,file=persistent.storage
 
 SHELL_SCRIPTS := \
 	zfs-config/packages.d/_ALWAYS.customise.add/usr/local/sbin/statuspage \
