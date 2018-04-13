@@ -1,6 +1,7 @@
 #
 # Check that the system is actually booting up
 
+set timeout 120
 
 expect "EDK II" {}                         timeout {bad 1 "EFI start"}
 expect "Mapping table" {}                  timeout {bad 1 "efishell start"}
