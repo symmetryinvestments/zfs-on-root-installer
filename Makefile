@@ -86,7 +86,7 @@ QEMU_CMD := qemu-system-x86_64 $(QEMU_KVM) \
     -netdev type=user,id=e0 -device virtio-net-pci,netdev=e0
 
 QEMU_ISO_CMD := $(QEMU_CMD) \
-    -bios /usr/share/OVMF/OVMF_CODE.fd \
+    -bios /usr/share/qemu/OVMF.fd \
     -cdrom $(ISO_IMAGE)
 
 # Just build the initramfs and boot it directly
