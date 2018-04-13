@@ -11,7 +11,7 @@ export CONFIG_POOL=tank
 export CONFIG_LOCALE="en_HK.UTF-8"
 export CONFIG_TIMEZONE="Asia/Hong_Kong"
 export CONFIG_DESKTOP=
-export CONFIG_PROXY=http://10.16.185.42:3142
+export CONFIG_PROXY=
 export CONFIG_ROOT_PW=root
 
 if [ "$CONFIG_UNATTENDED" != "true" ]; then
