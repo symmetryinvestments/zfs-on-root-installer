@@ -15,7 +15,9 @@ expect "vda1"                 {} timeout {bad 1 "Detecting ZFS layout"}
 set timeout 120
 
 expect "Retrieving InRelease"      {} timeout {bad 1 "debootstrap: start"}
+set timeout 360
 expect "Extracting"                {} timeout {bad 1 "debootstrap: extracting"}
+set timeout 120
 expect "Installing core packages"  {} timeout {bad 1 "debootstrap: install"}
 expect "Configuring required packages" {} timeout {bad 1 "debootstrap: config"}
 expect "Unpacking the base system" {} timeout {bad 1 "debootstrap: unpack 2"}
