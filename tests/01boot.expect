@@ -1,0 +1,10 @@
+#
+# Check that the system is actually booting up
+
+set timeout 120
+
+expect "EDK II" {}                         timeout {bad 1 "EFI start"}
+expect "Mapping table" {}                  timeout {bad 1 "efishell start"}
+
+expect "or any other key to continue" {}   timeout {bad 1 "efishell cmdline"}
+expect "Command line: linux.efi" {}        timeout {bad 1 "booting kernel"}
