@@ -8,7 +8,7 @@ language: c
 install:
     - make build-depends
     - sudo apt-get install debian-archive-keyring
-    - wget http://mirrors.kernel.org/ubuntu/pool/universe/e/edk2/ovmf_0~20170911.5dfba97c-1ubuntu0.1_all.deb
+    - wget http://ftp.us.debian.org/debian/pool/main/e/edk2/ovmf_0~20180328.c27c0003-1_all.deb
     - sudo dpkg -i ovmf_0~20170911.5dfba97c-1ubuntu0.1_all.deb
 
 # See the Ubuntu section in the debian/README file for more details, but this
