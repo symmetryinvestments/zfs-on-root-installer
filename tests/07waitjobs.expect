@@ -1,0 +1,16 @@
+#
+# Wait around for the systemd jobs to all finish
+
+#expect {
+#    "No jobs running."  {}
+#    root@ramdisk {
+#        send "systemctl list-jobs\r"
+#        exp_continue
+#    }
+#    "jobs listed."   {
+#        puts "XXX SLEEP"
+#        sleep 2
+#        exp_continue
+#    }
+#}
+
