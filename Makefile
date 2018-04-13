@@ -27,7 +27,7 @@ ISO_IMAGE := boot.iso
 
 build-depends: debian/Makefile
 	$(foreach dir,$(SUBDIRS),$(MAKE) -C $(dir) $@ &&) true
-	sudo apt install ovmf isolinux xorriso
+	sudo apt install ovmf isolinux xorriso expect
 
 # Calculate the basename of the debian build file
 DEBIAN_BASENAME = debian.$(CONFIG_DEBIAN_VER).$(CONFIG_DEBIAN_ARCH)
@@ -73,7 +73,15 @@ $(ISO_IMAGE): $(DISK_IMAGE)
 	    --efi-boot $(notdir $(DISK_IMAGE)) \
 	    $(ISODIR)
 
-QEMU_CMD := qemu-system-x86_64 -enable-kvm \
+# added just for travisCI
+CONFIG_DISABLE_KVM ?= no
+ifeq ($(CONFIG_DISABLE_KVM),yes)
+    QEMU_KVM=
+else
+    QEMU_KVM=-enable-kvm
+endif
+
+QEMU_CMD := qemu-system-x86_64 $(QEMU_KVM) \
     -m 1024 \
     -netdev type=user,id=e0 -device virtio-net-pci,netdev=e0
 
@@ -104,6 +112,12 @@ persistent.storage:
 	truncate $@ --size=10G
 REALLYCLEAN_FILES += persistent.storage
 
+test_efi_persist: $(ISO_IMAGE) persistent.storage
+	$(QEMU_ISO_CMD) \
+	    -display none \
+	    -serial null -serial stdio \
+	    -drive if=virtio,format=raw,file=persistent.storage
+
 test_efigui_persist: $(ISO_IMAGE) persistent.storage
 	$(QEMU_ISO_CMD) \
 	    -serial vc -serial stdio \
@@ -118,6 +132,17 @@ SHELL_SCRIPTS := \
 # Run a shell linter
 shellcheck:
 	shellcheck --shell bash $(SHELL_SCRIPTS)
+
+# TODO - define the ROOT password only in one place, instead of here and in the
+# debian/ submodule
+INSTALLER_ROOT_PASS:=root
+
+# Run a test script against the booted test environment
+.PHONY: test
+test: debian/Makefile shellcheck
+	rm -f persistent.storage
+	./debian/scripts/test_harness "make test_efi_persist" \
+	   config_pass=$(INSTALLER_ROOT_PASS)
 
 clean:
 	$(foreach dir,$(SUBDIRS),$(MAKE) -C $(dir) $@ &&) true
