@@ -27,7 +27,7 @@ ISO_IMAGE := boot.iso
 
 build-depends: debian/Makefile
 	$(foreach dir,$(SUBDIRS),$(MAKE) -C $(dir) $@ &&) true
-	sudo apt install ovmf isolinux xorriso expect
+	sudo apt install ovmf xorriso expect
 
 # Calculate the basename of the debian build file
 DEBIAN_BASENAME = debian.$(CONFIG_DEBIAN_VER).$(CONFIG_DEBIAN_ARCH)
