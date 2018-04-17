@@ -90,6 +90,7 @@ disk__add() {
     disk_set "$bn" rota "$(lsblk -n -b -d -o ROTA -r "$dev")"
     disk_set "$bn" model "$(lsblk -n -b -d -o MODEL -r "$dev")"
     disk_set "$bn" kname "$(lsblk -n -b -d -o KNAME -r "$dev")"
+    disk_set "$bn" tran "$(lsblk -n -b -d -o TRAN -r "$dev")"
 }
 
 # Given one or more full pathnames for a disk, create structures for them
@@ -115,8 +116,15 @@ disk_all() {
             # This happens if there are no disks
             continue
         fi
+
         name=$(basename "$path")
         kname=$(disk_get "$name" kname)
+
+        # Ignore 'small' disks
+        if [ "$(disk_get "$name" "size")" -lt 1000000000 ]; then
+            continue
+        fi
+
         echo "$kname $name"
     done |sort |cut -d" " -f2
 }
@@ -178,8 +186,9 @@ find_bulk() {
     disks="$(disk_all)"
 
     if [ -z "$disks" ]; then
-        echo No supported disks detected - cannot run installer
-        false
+        echo No supported disks detected - cannot autoconfigure installer
+        #false
+        return
     fi
 
     # shellcheck disable=SC2086
@@ -228,6 +237,11 @@ find_slog() {
     # shellcheck disable=SC2086
     disks_norota=$(disk_find_nomatch rota 1 $disks_avail)
 
+    if [ -z "$disks_norota" ]; then
+        # No supported disks detected
+        return
+    fi
+
     disks=
     # first, look for "INTEL SSD" - which we assume has power loss prevention
     for dev in $disks_norota; do
@@ -271,6 +285,11 @@ find_cache() {
     disks_avail=$(disk_find_nomatch consumed 1 $(disk_all))
     # shellcheck disable=SC2086
     disks_norota=$(disk_find_nomatch rota 1 $disks_avail)
+
+    if [ -z "$disks_norota" ]; then
+        # No supported disks detected
+        return
+    fi
 
     # first, look for a NVME - which we assume is "fastest" for reading
     for dev in $disks_norota; do
