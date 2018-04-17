@@ -85,8 +85,10 @@ QEMU_CMD := qemu-system-x86_64 $(QEMU_KVM) \
     -m 1024 \
     -netdev type=user,id=e0 -device virtio-net-pci,netdev=e0
 
-QEMU_ISO_CMD := $(QEMU_CMD) \
-    -bios /usr/share/qemu/OVMF.fd \
+QEMU_EFI_CMD := $(QEMU_CMD) \
+    -bios /usr/share/qemu/OVMF.fd
+
+QEMU_ISO_CMD := $(QEMU_EFI_CMD) \
     -cdrom $(ISO_IMAGE)
 
 # Just build the initramfs and boot it directly
@@ -97,7 +99,7 @@ test_quick: combined.initrd kernel/ubuntu.amd64.kernel
 	    -initrd combined.initrd \
 	    -nographic
 
-# Test the EFI boot
+# Test the EFI boot - with the 'normal' image wrapped in a ISO
 test_efi: $(ISO_IMAGE)
 	$(QEMU_ISO_CMD) \
 	    -display none \
@@ -111,6 +113,14 @@ test_efigui: $(ISO_IMAGE)
 persistent.storage:
 	truncate $@ --size=10G
 REALLYCLEAN_FILES += persistent.storage
+
+# Test the EFI boot - with the 'simplified' image - not wrapped
+test_efihd_persist: $(DISK_IMAGE) persistent.storage
+	$(QEMU_EFI_CMD) \
+	    -display none \
+	    -serial null -serial stdio \
+	    -drive if=virtio,format=raw,file=persistent.storage \
+	    -drive if=virtio,format=raw,id=boot,file=$(DISK_IMAGE)
 
 test_efi_persist: $(ISO_IMAGE) persistent.storage
 	$(QEMU_ISO_CMD) \
@@ -141,7 +151,7 @@ INSTALLER_ROOT_PASS:=root
 .PHONY: test
 test: debian/Makefile shellcheck
 	rm -f persistent.storage
-	./debian/scripts/test_harness "make test_efi_persist" \
+	./debian/scripts/test_harness "make test_efihd_persist" \
 	   config_pass=$(INSTALLER_ROOT_PASS)
 
 clean:
