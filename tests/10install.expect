@@ -15,7 +15,7 @@ expect "vda1"                 {} timeout {bad 1 "Detecting ZFS layout"}
 set timeout 120
 
 expect "Retrieving InRelease"      {} timeout {bad 1 "debootstrap: start"}
-set timeout 360
+set timeout 480
 expect "Extracting"                {} timeout {bad 1 "debootstrap: extracting"}
 set timeout 120
 expect "Installing core packages"  {} timeout {bad 1 "debootstrap: install"}
@@ -25,10 +25,11 @@ expect "Configuring the base system" {} timeout {bad 1 "debootstrap: config 2"}
 expect "Base system installed successfully." {} timeout {bad 1 "debootstrap: install 2"}
 
 expect "apt-update.sh:"            {} timeout {bad 1 "update package list"}
-set timeout 240
+set timeout 360
 expect "apt-install.sh:"           {} timeout {bad 1 "installing packages"}
 expect "disk space will be used."  {} timeout {bad 1 "installing packages 2"}
 expect "Preconfiguring packages"   {} timeout {bad 1 "installing packages 3"}
+set timeout 480
 expect "Setting up "               {} timeout {bad 1 "installing packages 4"}
 set timeout 120
 expect "Found ESP partitions:"     {} timeout {bad 1 "setup UEFI boot"}
