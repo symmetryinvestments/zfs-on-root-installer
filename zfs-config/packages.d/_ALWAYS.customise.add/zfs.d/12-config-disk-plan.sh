@@ -125,6 +125,11 @@ disk_all() {
             continue
         fi
 
+        # Dont automatically install on a USB disk
+        if [ "$(disk_get "$name" "tran")" = "usb" ]; then
+            continue
+        fi
+
         echo "$kname $name"
     done |sort |cut -d" " -f2
 }
