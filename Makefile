@@ -82,7 +82,7 @@ else
 endif
 
 QEMU_CMD := qemu-system-x86_64 $(QEMU_KVM) \
-    -m 1024 \
+    -m 1500 \
     -netdev type=user,id=e0 -device virtio-net-pci,netdev=e0
 
 QEMU_EFI_CMD := $(QEMU_CMD) \
