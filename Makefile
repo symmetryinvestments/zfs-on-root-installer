@@ -149,7 +149,7 @@ INSTALLER_ROOT_PASS:=root
 
 # Run a test script against the booted test environment
 .PHONY: test
-test: debian/Makefile shellcheck
+test: debian/Makefile shellcheck $(ISO_IMAGE)
 	rm -f persistent.storage
 	./debian/scripts/test_harness "make test_efihd_persist" \
 	   config_pass=$(INSTALLER_ROOT_PASS)
