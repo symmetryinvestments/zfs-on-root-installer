@@ -12,7 +12,7 @@ expect {
 }
 expect "vda1"                 {} timeout {bad 1 "Detecting ZFS layout"}
 
-set timeout 1200
+set timeout 2400
 
 expect "Retrieving InRelease"      {} timeout {bad 1 "debootstrap: start"}
 expect "Extracting"                {} timeout {bad 1 "debootstrap: extracting"}
