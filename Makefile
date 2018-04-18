@@ -156,7 +156,7 @@ TEST_CMD := $(TEST_HARNESS) "make $(TEST_TARGET)" $(TEST_ARGS)
 
 TESTS1 := tests/01boot.expect
 TESTS2 := $(TESTS1) tests/05login_installer.expect tests/07waitjobs.expect
-TESTS3 := $(TESTS2) 10install.expect
+TESTS3 := $(TESTS2) tests/10install.expect
 
 # Run a test script for perform a full system install
 .PHONY: test.full
@@ -169,7 +169,6 @@ test.full: debian/Makefile
 test.partial1: debian/Makefile; $(TEST_CMD) $(TESTS1)
 test.partial2: debian/Makefile; $(TEST_CMD) $(TESTS2)
 test.partial3: debian/Makefile; $(TEST_CMD) $(TESTS3)
-
 
 .PHONY: test
 test: shellcheck test.full
