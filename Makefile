@@ -3,9 +3,7 @@
 # disk
 #
 
-all:
-	@echo not yet
-	false
+all: bootable-images
 
 SUBDIRS := debian kernel
 
@@ -24,6 +22,9 @@ CONFIG_DEBIAN_VER := stretch
 ISODIR := iso
 DISK_IMAGE := $(ISODIR)/boot.img
 ISO_IMAGE := boot.iso
+
+.PHONY: bootable-images
+bootable-images: $(DISK_IMAGE) $(ISO_IMAGE)
 
 build-depends: debian/Makefile
 	$(foreach dir,$(SUBDIRS),$(MAKE) -C $(dir) $@ &&) true
@@ -149,7 +150,7 @@ INSTALLER_ROOT_PASS:=root
 
 # Run a test script against the booted test environment
 .PHONY: test
-test: debian/Makefile shellcheck $(ISO_IMAGE)
+test: debian/Makefile shellcheck $(DISK_IMAGE)
 	rm -f persistent.storage
 	./debian/scripts/test_harness "make test_efihd_persist" \
 	   config_pass=$(INSTALLER_ROOT_PASS)
