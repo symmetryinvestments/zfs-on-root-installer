@@ -24,7 +24,11 @@ before_script:
     - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EF0F382A1A7B6500
 
 script:
+    - make shellcheck
     - make build-depends
     - make debian
     - make bootable-images
+    - make test.partial1 CONFIG_DISABLE_KVM=yes
+    - make test.partial2 CONFIG_DISABLE_KVM=yes
+    - make test.partial3 CONFIG_DISABLE_KVM=yes
     - make test CONFIG_DISABLE_KVM=yes

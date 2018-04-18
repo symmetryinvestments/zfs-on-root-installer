@@ -148,12 +148,31 @@ shellcheck:
 # debian/ submodule
 INSTALLER_ROOT_PASS:=root
 
-# Run a test script against the booted test environment
-.PHONY: test
-test: debian/Makefile shellcheck $(DISK_IMAGE)
+# Common definitions used for all test targets
+TEST_HARNESS := ./debian/scripts/test_harness
+TEST_TARGET := test_efihd_persist
+TEST_ARGS := config_pass=$(INSTALLER_ROOT_PASS)
+TEST_CMD := $(TEST_HARNESS) "make $(TEST_TARGET)" $(TEST_ARGS)
+
+TESTS1 := tests/01boot.expect
+TESTS2 := $(TESTS1) tests/05login_installer.expect tests/07waitjobs.expect
+TESTS3 := $(TESTS2) 10install.expect
+
+# Run a test script for perform a full system install
+.PHONY: test.full
+test.full: debian/Makefile
 	rm -f persistent.storage
-	./debian/scripts/test_harness "make test_efihd_persist" \
-	   config_pass=$(INSTALLER_ROOT_PASS)
+	$(TEST_CMD) tests/*.expect
+
+# Partial tests that complete faster
+.PHONY: test.partial1 test.partial2 test.partial3
+test.partial1: debian/Makefile; $(TEST_CMD) $(TESTS1)
+test.partial2: debian/Makefile; $(TEST_CMD) $(TESTS2)
+test.partial3: debian/Makefile; $(TEST_CMD) $(TESTS3)
+
+
+.PHONY: test
+test: shellcheck test.full
 
 clean:
 	$(foreach dir,$(SUBDIRS),$(MAKE) -C $(dir) $@ &&) true
