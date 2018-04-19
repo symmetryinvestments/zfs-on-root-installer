@@ -1,0 +1,23 @@
+#
+# Run the installer
+#
+# part 1
+# (this has been split apart to make partital tests and timing simpler)
+
+expect root@ramdisk {} timeout {bad 1 "shell prompt"}
+
+send "/zfs.install --unattended\r"
+
+expect {
+    timeout                       {bad 1 "Detecting ZFS disks"}
+    "No supported disks detected" {bad 1 "No Disks"}
+    "ZFS Vdevs to create:"        {}
+}
+expect "vda1"                 {} timeout {bad 1 "Detecting ZFS layout"}
+
+set timeout 2400
+
+expect "Retrieving InRelease"      {} timeout {bad 1 "debootstrap: start"}
+expect "Extracting"                {} timeout {bad 1 "debootstrap: extracting"}
+expect "Installing core packages"  {} timeout {bad 1 "debootstrap: install"}
+expect "Configuring required packages" {} timeout {bad 1 "debootstrap: config"}
