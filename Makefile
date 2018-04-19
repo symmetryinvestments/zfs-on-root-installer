@@ -154,9 +154,10 @@ TEST_TARGET := test_efihd_persist
 TEST_ARGS := config_pass=$(INSTALLER_ROOT_PASS)
 TEST_CMD := $(TEST_HARNESS) "make $(TEST_TARGET)" $(TEST_ARGS)
 
-TESTS1 := tests/01boot.expect
-TESTS2 := $(TESTS1) tests/05login_installer.expect tests/07waitjobs.expect
-TESTS3 := $(TESTS2) tests/10install.expect
+TESTS1 := tests/01boot.expect tests/05login_installer.expect \
+    tests/07waitjobs.expect
+TESTS2 := $(TESTS1) tests/10install1.expect
+TESTS3 := $(TESTS2) tests/10install2.expect
 
 # Run a test script for perform a full system install
 .PHONY: test.full
