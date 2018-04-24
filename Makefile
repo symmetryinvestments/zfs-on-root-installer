@@ -101,7 +101,7 @@ QEMU_CMD_EFI := -bios /usr/share/qemu/OVMF.fd
 QEMU_CMD_CDROM := -cdrom $(ISO_IMAGE)
 QEMU_CMD_SERIALONLY := -display none -serial null -serial stdio
 QEMU_CMD_SERIAL2 := -serial vc -serial stdio
-QEMU_CMD_DRIVE0 := -drive if=virtio,format=raw,file=persistent.storage
+QEMU_CMD_DRIVE0 := -drive if=virtio,cache=unsafe,format=raw,file=persistent.storage
 
 QEMU_CMD := qemu-system-x86_64 $(QEMU_KVM) \
     -m 1500
