@@ -103,14 +103,6 @@ QEMU_CMD_CDROM := -cdrom $(ISO_IMAGE)
 QEMU_CMD := qemu-system-x86_64 $(QEMU_KVM) \
     -m 1500
 
-QEMU_EFI_CMD := $(QEMU_CMD) \
-    -bios /usr/share/qemu/OVMF.fd
-
-QEMU_ISO_CMD := $(QEMU_CMD) \
-    $(QEMU_CMD_NET) \
-    $(QEMU_CMD_EFI) \
-    $(QEMU_CMD_CDROM)
-
 # Just build the initramfs and boot it directly
 test_quick: combined.initrd kernel/ubuntu.amd64.kernel
 	$(QEMU_CMD) \
