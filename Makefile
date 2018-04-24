@@ -74,6 +74,20 @@ $(ISO_IMAGE): $(DISK_IMAGE)
 	    --efi-boot $(notdir $(DISK_IMAGE)) \
 	    $(ISODIR)
 
+persistent.storage:
+	truncate $@ --size=10G
+REALLYCLEAN_FILES += persistent.storage
+
+SHELL_SCRIPTS := \
+	zfs-config/packages.d/_ALWAYS.customise.add/usr/local/sbin/statuspage \
+	zfs-config/packages.d/_ALWAYS.customise.add/zfs.install \
+	zfs-config/packages.d/_ALWAYS.customise.add/zfs.d/*.sh \
+	zfs-config/packages.d/_ALWAYS.customise.add/zfs.d/inchroot/*.sh \
+
+# Run a shell linter
+shellcheck:
+	shellcheck --shell bash $(SHELL_SCRIPTS)
+
 # added just for travisCI
 CONFIG_DISABLE_KVM ?= no
 ifeq ($(CONFIG_DISABLE_KVM),yes)
@@ -123,10 +137,6 @@ test_efigui: $(ISO_IMAGE)
 	    $(QEMU_CMD_CDROM) \
 	    -serial vc -serial stdio
 
-persistent.storage:
-	truncate $@ --size=10G
-REALLYCLEAN_FILES += persistent.storage
-
 # Test the EFI boot - with the 'simplified' image - not wrapped
 test_efihd_persist: $(DISK_IMAGE) persistent.storage
 	$(QEMU_CMD) \
@@ -153,16 +163,6 @@ test_efigui_persist: $(ISO_IMAGE) persistent.storage
 	    $(QEMU_CMD_CDROM) \
 	    -serial vc -serial stdio \
 	    -drive if=virtio,format=raw,file=persistent.storage
-
-SHELL_SCRIPTS := \
-	zfs-config/packages.d/_ALWAYS.customise.add/usr/local/sbin/statuspage \
-	zfs-config/packages.d/_ALWAYS.customise.add/zfs.install \
-	zfs-config/packages.d/_ALWAYS.customise.add/zfs.d/*.sh \
-	zfs-config/packages.d/_ALWAYS.customise.add/zfs.d/inchroot/*.sh \
-
-# Run a shell linter
-shellcheck:
-	shellcheck --shell bash $(SHELL_SCRIPTS)
 
 # TODO - define the ROOT password only in one place, instead of here and in the
 # debian/ submodule
