@@ -82,19 +82,25 @@ else
     QEMU_KVM=-enable-kvm
 endif
 
+QEMU_CMD_NET := -netdev type=user,id=e0 -device virtio-net-pci,netdev=e0
+QEMU_CMD_EFI := -bios /usr/share/qemu/OVMF.fd
+QEMU_CMD_CDROM := -cdrom $(ISO_IMAGE)
+
 QEMU_CMD := qemu-system-x86_64 $(QEMU_KVM) \
-    -m 1500 \
-    -netdev type=user,id=e0 -device virtio-net-pci,netdev=e0
+    -m 1500
 
 QEMU_EFI_CMD := $(QEMU_CMD) \
     -bios /usr/share/qemu/OVMF.fd
 
-QEMU_ISO_CMD := $(QEMU_EFI_CMD) \
-    -cdrom $(ISO_IMAGE)
+QEMU_ISO_CMD := $(QEMU_CMD) \
+    $(QEMU_CMD_NET) \
+    $(QEMU_CMD_EFI) \
+    $(QEMU_CMD_CDROM)
 
 # Just build the initramfs and boot it directly
 test_quick: combined.initrd kernel/ubuntu.amd64.kernel
 	$(QEMU_CMD) \
+	    $(QEMU_CMD_NET) \
 	    -append console=ttyS0 \
 	    -kernel kernel/ubuntu.amd64.kernel \
 	    -initrd combined.initrd \
@@ -102,13 +108,19 @@ test_quick: combined.initrd kernel/ubuntu.amd64.kernel
 
 # Test the EFI boot - with the 'normal' image wrapped in a ISO
 test_efi: $(ISO_IMAGE)
-	$(QEMU_ISO_CMD) \
+	$(QEMU_CMD) \
+	    $(QEMU_CMD_NET) \
+	    $(QEMU_CMD_EFI) \
+	    $(QEMU_CMD_CDROM) \
 	    -display none \
 	    -serial null -serial stdio
 
 # Test EFI booting, with an actual graphics console visible
 test_efigui: $(ISO_IMAGE)
-	$(QEMU_ISO_CMD) \
+	$(QEMU_CMD) \
+	    $(QEMU_CMD_NET) \
+	    $(QEMU_CMD_EFI) \
+	    $(QEMU_CMD_CDROM) \
 	    -serial vc -serial stdio
 
 persistent.storage:
@@ -117,20 +129,28 @@ REALLYCLEAN_FILES += persistent.storage
 
 # Test the EFI boot - with the 'simplified' image - not wrapped
 test_efihd_persist: $(DISK_IMAGE) persistent.storage
-	$(QEMU_EFI_CMD) \
+	$(QEMU_CMD) \
+	    $(QEMU_CMD_NET) \
+	    $(QEMU_CMD_EFI) \
 	    -display none \
 	    -serial null -serial stdio \
 	    -drive if=virtio,format=raw,file=persistent.storage \
 	    -drive if=virtio,format=raw,id=boot,file=$(DISK_IMAGE)
 
 test_efi_persist: $(ISO_IMAGE) persistent.storage
-	$(QEMU_ISO_CMD) \
+	$(QEMU_CMD) \
+	    $(QEMU_CMD_NET) \
+	    $(QEMU_CMD_EFI) \
+	    $(QEMU_CMD_CDROM) \
 	    -display none \
 	    -serial null -serial stdio \
 	    -drive if=virtio,format=raw,file=persistent.storage
 
 test_efigui_persist: $(ISO_IMAGE) persistent.storage
-	$(QEMU_ISO_CMD) \
+	$(QEMU_CMD) \
+	    $(QEMU_CMD_NET) \
+	    $(QEMU_CMD_EFI) \
+	    $(QEMU_CMD_CDROM) \
 	    -serial vc -serial stdio \
 	    -drive if=virtio,format=raw,file=persistent.storage
 
