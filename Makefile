@@ -99,6 +99,9 @@ endif
 QEMU_CMD_NET := -netdev type=user,id=e0 -device virtio-net-pci,netdev=e0
 QEMU_CMD_EFI := -bios /usr/share/qemu/OVMF.fd
 QEMU_CMD_CDROM := -cdrom $(ISO_IMAGE)
+QEMU_CMD_SERIALONLY := -display none -serial null -serial stdio
+QEMU_CMD_SERIAL2 := -serial vc -serial stdio
+QEMU_CMD_DRIVE0 := -drive if=virtio,format=raw,file=persistent.storage
 
 QEMU_CMD := qemu-system-x86_64 $(QEMU_KVM) \
     -m 1500
@@ -118,8 +121,7 @@ test_efi: $(ISO_IMAGE)
 	    $(QEMU_CMD_NET) \
 	    $(QEMU_CMD_EFI) \
 	    $(QEMU_CMD_CDROM) \
-	    -display none \
-	    -serial null -serial stdio
+	    $(QEMU_CMD_SERIALONLY)
 
 # Test EFI booting, with an actual graphics console visible
 test_efigui: $(ISO_IMAGE)
@@ -127,16 +129,15 @@ test_efigui: $(ISO_IMAGE)
 	    $(QEMU_CMD_NET) \
 	    $(QEMU_CMD_EFI) \
 	    $(QEMU_CMD_CDROM) \
-	    -serial vc -serial stdio
+	    $(QEMU_CMD_SERIAL2)
 
 # Test the EFI boot - with the 'simplified' image - not wrapped
 test_efihd_persist: $(DISK_IMAGE) persistent.storage
 	$(QEMU_CMD) \
 	    $(QEMU_CMD_NET) \
 	    $(QEMU_CMD_EFI) \
-	    -display none \
-	    -serial null -serial stdio \
-	    -drive if=virtio,format=raw,file=persistent.storage \
+	    $(QEMU_CMD_SERIALONLY) \
+	    $(QEMU_CMD_DRIVE0) \
 	    -drive if=virtio,format=raw,id=boot,file=$(DISK_IMAGE)
 
 test_efi_persist: $(ISO_IMAGE) persistent.storage
@@ -144,17 +145,16 @@ test_efi_persist: $(ISO_IMAGE) persistent.storage
 	    $(QEMU_CMD_NET) \
 	    $(QEMU_CMD_EFI) \
 	    $(QEMU_CMD_CDROM) \
-	    -display none \
-	    -serial null -serial stdio \
-	    -drive if=virtio,format=raw,file=persistent.storage
+	    $(QEMU_CMD_SERIALONLY) \
+	    $(QEMU_CMD_DRIVE0)
 
 test_efigui_persist: $(ISO_IMAGE) persistent.storage
 	$(QEMU_CMD) \
 	    $(QEMU_CMD_NET) \
 	    $(QEMU_CMD_EFI) \
 	    $(QEMU_CMD_CDROM) \
-	    -serial vc -serial stdio \
-	    -drive if=virtio,format=raw,file=persistent.storage
+	    $(QEMU_CMD_SERIAL2) \
+	    $(QEMU_CMD_DRIVE0)
 
 # TODO - define the ROOT password only in one place, instead of here and in the
 # debian/ submodule
