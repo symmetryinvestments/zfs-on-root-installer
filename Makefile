@@ -175,8 +175,22 @@ TESTS3 := $(TESTS2) tests/10install2.expect
 # Run a test script for perform a full system install
 .PHONY: test.full
 test.full: debian/Makefile
+	rm -f test.full
 	rm -f persistent.storage
 	$(TEST_CMD) tests/*.expect
+	touch test.full
+
+# If the full test is running in the background, look for a sign of success
+# (this is used in the travis CI build)
+.PHONY: test.full.watch
+test.full.watch:
+	@for i in `seq 1 2`; do [ -f test.full ] && break; sleep 10s; done
+
+# Confirm that the full test completed successfully
+# (this is used in the travis CI build)
+.PHONY: test.full.final
+test.full.final:
+	@[ -f test.full ]
 
 # Partial tests that complete faster
 .PHONY: test.partial1 test.partial2 test.partial3
