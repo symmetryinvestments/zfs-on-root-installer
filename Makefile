@@ -184,7 +184,7 @@ test.full: debian/Makefile
 # (this is used in the travis CI build)
 .PHONY: test.full.watch
 test.full.watch:
-	@for i in `seq 1 2`; do [ -f test.full ] && break; sleep 10s; done
+	@for i in `seq 1 60`; do [ -f test.full ] && break; sleep 10s; done
 
 # Confirm that the full test completed successfully
 # (this is used in the travis CI build)
