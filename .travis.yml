@@ -35,5 +35,5 @@ script:
     # Generate some output every 9 minutes or Travis kills the build
     # (travis_wait is bad because it hides all the output until later)
     # https://docs.travis-ci.com/user/common-build-problems/#Build-times-out-because-no-output-was-received
-    - while sleep 9m; do echo "\n### IDLE BUSTER $SECONDS seconds ###\n"; done &
+    - while sleep 9m; do echo "### IDLE BUSTER $SECONDS seconds ###"; done &
     - make test CONFIG_DISABLE_KVM=yes QEMU_RAM=3000 |ts -s
