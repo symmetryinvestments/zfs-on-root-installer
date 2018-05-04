@@ -36,4 +36,4 @@ script:
     # (travis_wait is bad because it hides all the output until later)
     # https://docs.travis-ci.com/user/common-build-problems/#Build-times-out-because-no-output-was-received
     - while sleep 9m; do echo "\n=== IDLE BUSTER $SECONDS seconds ===\n"; done &
-    - make test CONFIG_DISABLE_KVM=yes QEMU_RAM=3000 |ts -s
+    - make test CONFIG_DISABLE_KVM=yes QEMU_RAM=3000 |ts "%s %H:%M:%S"
