@@ -96,6 +96,7 @@ else
     QEMU_KVM=-enable-kvm
 endif
 
+QEMU_RAM := 1500
 QEMU_CMD_NET := -netdev type=user,id=e0 -device virtio-net-pci,netdev=e0
 QEMU_CMD_EFI := -bios /usr/share/qemu/OVMF.fd
 QEMU_CMD_CDROM := -cdrom $(ISO_IMAGE)
@@ -104,7 +105,7 @@ QEMU_CMD_SERIAL2 := -serial vc -serial stdio
 QEMU_CMD_DRIVE0 := -drive if=virtio,cache=unsafe,format=raw,file=persistent.storage
 
 QEMU_CMD := qemu-system-x86_64 $(QEMU_KVM) \
-    -m 1500
+    -m $(QEMU_RAM)
 
 # Just build the initramfs and boot it directly
 test_quick: combined.initrd kernel/ubuntu.amd64.kernel
