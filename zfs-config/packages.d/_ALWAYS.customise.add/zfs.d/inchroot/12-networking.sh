@@ -8,6 +8,7 @@
 # shows the entire system as running in degraded mode.
 # Lets avoid that.
 systemctl mask systemd-networkd-wait-online.service
+systemctl mask NetworkManager-wait-online.service
 
 # no desktop environments currently read the status from systemd-network
 # So, we only configure systemd networkd on server systems
