@@ -8,6 +8,7 @@ language: c
 install:
     - make build-depends
     - sudo apt-get install debian-archive-keyring
+    - sudo apt-get install moreutils
     - wget http://ftp.us.debian.org/debian/pool/main/e/edk2/ovmf_0~20180328.c27c0003-1_all.deb
     - sudo apt install binutils xz-utils
     - ar x ovmf_*_all.deb
@@ -26,8 +27,9 @@ before_script:
 script:
     - free
     - cat /proc/partitions
+    - mount
     - make shellcheck
     - make build-depends
     - make debian
     - make bootable-images
-    - make test CONFIG_DISABLE_KVM=yes
+    - make test CONFIG_DISABLE_KVM=yes |ts -s
