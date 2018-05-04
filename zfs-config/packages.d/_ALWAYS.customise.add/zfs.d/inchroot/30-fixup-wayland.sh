@@ -18,4 +18,6 @@ if [ -n "$CONFIG_DESKTOP" ]; then
     # Additionally, to stop gdm3 from using wayland for the login screen:
     sed -i -E -e 's/^#(WaylandEnable=false)/\1/' /etc/gdm3/custom.conf
 
+    # TODO
+    # - divert /usr/share/xgreeters/unity-greeter.desktop
 fi

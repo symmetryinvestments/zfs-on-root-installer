@@ -3,12 +3,12 @@
 #
 
 # FIXME
+# - we assume that part9 is always and only ESP
 # - lsblk doesnt find any ESP partitions when run inside the chroot ?!?!
 # figure out which partitions are ESP
 #PARTS=$(lsblk -r -o "name,parttype" |grep c12a7328-f81f-11d2-ba4b-00a0c93ec93b)
 
 # A list of all ESP partitions
-# FIXME - we assume that part9 is always and only ESP
 PARTS_BYID=$(find /dev/disk/by-id/ |grep -- -part9 ||true)
 
 # systems that don't have disk by-id labels (eg: virtio disks)

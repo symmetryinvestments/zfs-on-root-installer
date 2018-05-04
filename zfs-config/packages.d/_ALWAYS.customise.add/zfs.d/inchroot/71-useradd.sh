@@ -9,7 +9,7 @@ if [ -n "$CONFIG_USER" ]; then
     echo -e "$CONFIG_USER:$CONFIG_USER_PW" | chpasswd
 fi
 
-# Create users for any authorized_keys shiped with the ramdisk builder.
+# Create users for any authorized_keys shipped with the ramdisk builder.
 # This is intended for admin access for post-install configuration management
 # tools and for any IT team users.  Therefore, these users need to be given
 # sudo access.  To assist with not hardcoding passwords, they are also

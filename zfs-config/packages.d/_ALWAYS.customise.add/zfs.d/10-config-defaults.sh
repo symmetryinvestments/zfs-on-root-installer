@@ -7,6 +7,9 @@ if [ -z "$CONFIG_UNATTENDED" ]; then
     export CONFIG_UNATTENDED=false
 fi
 
+# TODO
+# - only set these vars if they are not currently set
+
 export CONFIG_POOL=tank
 export CONFIG_LOCALE="en_HK.UTF-8"
 export CONFIG_TIMEZONE="Asia/Hong_Kong"
