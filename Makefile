@@ -88,14 +88,6 @@ SHELL_SCRIPTS := \
 shellcheck:
 	shellcheck --shell bash $(SHELL_SCRIPTS)
 
-# added just for travisCI
-CONFIG_DISABLE_KVM ?= no
-ifeq ($(CONFIG_DISABLE_KVM),yes)
-    QEMU_KVM=
-else
-    QEMU_KVM=-enable-kvm
-endif
-
 QEMU_RAM := 1500
 QEMU_CMD_NET := -netdev type=user,id=e0 -device virtio-net-pci,netdev=e0
 QEMU_CMD_EFI := -bios /usr/share/qemu/OVMF.fd
@@ -104,8 +96,7 @@ QEMU_CMD_SERIALONLY := -display none -serial null -serial stdio
 QEMU_CMD_SERIAL2 := -serial vc -serial stdio
 QEMU_CMD_DRIVE0 := -drive if=virtio,cache=unsafe,format=raw,file=persistent.storage
 
-QEMU_CMD := qemu-system-x86_64 $(QEMU_KVM) \
-    -m $(QEMU_RAM)
+QEMU_CMD := qemu-system-x86_64 -accel kvm:tcg -m $(QEMU_RAM)
 
 # Just build the initramfs and boot it directly
 test_quick: combined.initrd kernel/ubuntu.amd64.kernel
