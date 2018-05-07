@@ -2,29 +2,34 @@
 # Set the default values for all the configuration
 #
 
-# Unless otherwise set, we assume we are running an attended install
-if [ -z "$CONFIG_UNATTENDED" ]; then
-    export CONFIG_UNATTENDED=false
-fi
-
 # TODO
-# - only set these vars if they are not currently set
+# - invent a proxy autodetection process and use that in a different file
 
-export CONFIG_POOL=tank
-export CONFIG_LOCALE="en_HK.UTF-8"
-export CONFIG_TIMEZONE="Asia/Hong_Kong"
-export CONFIG_DESKTOP=
-export CONFIG_PROXY=
-export CONFIG_ROOT_PW=root
+export CONFIG_UNATTENDED CONFIG_POOL CONFIG_LOCALE CONFIG_TIMEZONE \
+    CONFIG_DESKTOP CONFIG_PROXY CONFIG_ROOT_PW CONFIG_SUITE
+
+# Set defaults for config, unless already set in the environment
+: "${CONFIG_UNATTENDED:=false}"
+: "${CONFIG_POOL:=tank}"
+: "${CONFIG_LOCALE:=en_HK.UTF-8}"
+: "${CONFIG_TIMEZONE:=Asia/Hong_Kong}"
+: "${CONFIG_ROOT_PW:=root}"
+
+# : "${ CONFIG_PROXY:=FIXME}"
 
 if [ "$CONFIG_UNATTENDED" != "true" ]; then
+    # The reasoning is that an unattended install is driven by some automation
+    # and that automation can come back later and automatically add the right
+    # packages for the system - so unattended does not need any desktop package
+    # list.
+    # Also, people testing the installer will probably be performing attended
+    # installs, so provide a default package to install the desktop environment
+    # (which is also shown to the user in the config dialog)
+
     # A list of packages to install to turn the system into a desktop
     # environment
     CONFIG_DESKTOP="ubuntu-gnome-desktop"
 fi
-
-# TODO
-# - should not set the proxy here, should try and autodetect it
 
 # local user to create - not expected to be set in the defaults, but eg:
 #export CONFIG_USER=username
