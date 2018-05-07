@@ -8,6 +8,8 @@ expect "apt-install.sh:"           {} timeout {bad 1 "installing packages"}
 expect "disk space will be used."  {} timeout {bad 1 "installing packages 2"}
 expect "Preconfiguring packages"   {} timeout {bad 1 "installing packages 3"}
 expect "Setting up "               {} timeout {bad 1 "installing packages 4"}
+
+set timeout 2400
 expect "Found ESP partitions:"     {} timeout {bad 1 "setup UEFI boot"}
 expect "finished. No error reported" {} timeout {bad 1 "Install Grub-efi"}
 expect "for EFI firmware configuration" {} timeout {bad 1 "Configure Grub-efi"}
