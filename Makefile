@@ -96,7 +96,7 @@ QEMU_CMD_SERIALONLY := -display none -serial null -serial stdio
 QEMU_CMD_SERIAL2 := -serial vc -serial stdio
 QEMU_CMD_DRIVE0 := -drive if=virtio,cache=unsafe,format=raw,file=persistent.storage
 
-QEMU_CMD := qemu-system-x86_64 -accel kvm:tcg -m $(QEMU_RAM)
+QEMU_CMD := qemu-system-x86_64 -machine pc,accel=kvm:tcg -m $(QEMU_RAM)
 
 # Just build the initramfs and boot it directly
 test_quick: combined.initrd kernel/ubuntu.amd64.kernel
