@@ -21,3 +21,7 @@ expect "Retrieving InRelease"      {} timeout {bad 1 "debootstrap: start"}
 expect "Extracting"                {} timeout {bad 1 "debootstrap: extracting"}
 expect "Installing core packages"  {} timeout {bad 1 "debootstrap: install"}
 expect "Configuring required packages" {} timeout {bad 1 "debootstrap: config"}
+
+expect "Unpacking the base system" {} timeout {bad 1 "debootstrap: unpack 2"}
+expect "Configuring the base system" {} timeout {bad 1 "debootstrap: config 2"}
+expect "Base system installed successfully." {} timeout {bad 1 "debootstrap: install 2"}

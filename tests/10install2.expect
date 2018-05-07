@@ -3,10 +3,6 @@
 #
 # part 2
 
-expect "Unpacking the base system" {} timeout {bad 1 "debootstrap: unpack 2"}
-expect "Configuring the base system" {} timeout {bad 1 "debootstrap: config 2"}
-expect "Base system installed successfully." {} timeout {bad 1 "debootstrap: install 2"}
-
 expect "apt-update.sh:"            {} timeout {bad 1 "update package list"}
 expect "apt-install.sh:"           {} timeout {bad 1 "installing packages"}
 expect "disk space will be used."  {} timeout {bad 1 "installing packages 2"}

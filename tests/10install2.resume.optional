@@ -1,0 +1,10 @@
+#
+# Resume the installation with stage2 performing all the steps inside the
+# installer chroot
+#
+
+expect root@ramdisk {} timeout {bad 1 "shell prompt"}
+
+send "bash /zfs.d/89-stage2_start.sh\r"
+
+expect "stage2: resuming install"       {} timeout {bad 1 "resuming install"}

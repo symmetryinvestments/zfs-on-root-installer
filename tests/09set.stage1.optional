@@ -1,0 +1,8 @@
+#
+# Setup the installer to stop everything after the debootstrap and before
+# the chroot
+#
+
+expect root@ramdisk {} timeout {bad 1 "shell prompt"}
+
+send "chmod a+x /zfs.d/88-stage1_stop.sh\r"

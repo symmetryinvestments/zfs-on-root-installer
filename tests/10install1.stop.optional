@@ -1,0 +1,8 @@
+#
+# Look for the end of the stage1 installer
+#
+
+expect "Stage 1 completed"          {} timeout {bad 1 "stage1: completed"}
+expect "Reached target Shutdown"    {} timeout {bad 1 "stage1: shutdown"}
+expect "reboot: Power down"         {} timeout {bad 1 "stage1: power off"}
+expect "Leaving directory"          {} timeout {bad 1 "stage1: make finished"}

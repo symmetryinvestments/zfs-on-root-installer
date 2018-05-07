@@ -158,10 +158,17 @@ TEST_TARGET := test_efihd_persist
 TEST_ARGS := config_pass=$(INSTALLER_ROOT_PASS)
 TEST_CMD := $(TEST_HARNESS) "make $(TEST_TARGET)" $(TEST_ARGS)
 
-TESTS1 := tests/01boot.expect tests/05login_installer.expect \
-    tests/07waitjobs.expect
-TESTS2 := $(TESTS1) tests/10install1.expect
-TESTS3 := $(TESTS2) tests/10install2.expect
+TESTS_STAGE1 := tests/01boot.expect tests/05login_installer.expect \
+    tests/07waitjobs.expect \
+    tests/09set.stage1.optional \
+    tests/10install1.expect \
+    tests/10install1.stop.optional
+TESTS_STAGE2 := tests/01boot.expect tests/05login_installer.expect \
+    tests/07waitjobs.expect \
+    tests/10install2.resume.optional \
+    tests/10install2.expect \
+    tests/15boot.expect \
+    tests/20login_installed.expect
 
 # Run a test script for perform a full system install
 .PHONY: test.full
@@ -171,23 +178,10 @@ test.full: debian/Makefile
 	$(TEST_CMD) tests/*.expect
 	touch test.full
 
-# If the full test is running in the background, look for a sign of success
-# (this is used in the travis CI build)
-.PHONY: test.full.watch
-test.full.watch:
-	@for i in `seq 1 60`; do [ -f test.full ] && break; sleep 10s; done
-
-# Confirm that the full test completed successfully
-# (this is used in the travis CI build)
-.PHONY: test.full.final
-test.full.final:
-	@[ -f test.full ]
-
-# Partial tests that complete faster
-.PHONY: test.partial1 test.partial2 test.partial3
-test.partial1: debian/Makefile; $(TEST_CMD) $(TESTS1)
-test.partial2: debian/Makefile; $(TEST_CMD) $(TESTS2)
-test.partial3: debian/Makefile; $(TEST_CMD) $(TESTS3)
+# Split the build into multiple stages
+.PHONY: test.stage1 test.stage2
+test.stage1: debian/Makefile; $(TEST_CMD) $(TESTS_STAGE1)
+test.stage2: debian/Makefile; $(TEST_CMD) $(TESTS_STAGE2)
 
 .PHONY: test
 test: shellcheck test.full
