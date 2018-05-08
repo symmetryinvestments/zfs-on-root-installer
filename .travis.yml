@@ -32,9 +32,7 @@ script:
     - make build-depends
     - make debian
     - make bootable-images
-    # Generate some output every 9 minutes or Travis kills the build
-    # (travis_wait is bad because it hides all the output until later)
-    # https://docs.travis-ci.com/user/common-build-problems/#Build-times-out-because-no-output-was-received
-    - while sleep 9m; do echo -e "\n=== IDLE BUSTER $SECONDS seconds ===\n"; done &
+    # Note that normally, you would not want to install things with two stages
+    # but the timeouts in travis-ci make this split essential
     - make test.stage1
     - make test.stage2
