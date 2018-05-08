@@ -23,6 +23,14 @@ runscripts() {
     done
 }
 
+# The travis CI assumes that any job that has no output for 10 minutes is
+# frozen.  During our install, there are some places where there is no output
+# for an extended period - in particular, during "update-initramfs",  so we
+# generate some bogus output here.  Doing it in this script gives us more
+# control than doing it in the travis.yml
+echo "stage2: starting idle buster"
+while sleep 9m; do echo -e "\n=== IDLE BUSTER $SECONDS seconds ===\n"; done &
+
 echo "stage2: setting up environment"
 runscripts 10-config-defaults.sh 40-zfs-package.sh \
     45-modprobe-efi.sh 45-modprobe-zfs.sh
