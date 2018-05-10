@@ -1,0 +1,10 @@
+
+before_script:
+    - make build-depends
+    - sudo apt-get install debian-archive-keyring
+
+build:
+    script:
+        - make debian
+        - make bootable-images
+        - make test

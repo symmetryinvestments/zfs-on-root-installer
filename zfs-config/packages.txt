@@ -1,4 +1,10 @@
-# Packages to add to the basic debian system to allow us to install zfs
+#
+# This file contains a list of packages that will be installed in the first
+# stage "pre-installation" system.
+#
+# Adding packages here will not cause them to end up in the final
+# installed ZFS system.  That is done by the scripts that make up the
+# installer ( in zfs-config/packages.d/_ALWAYS.customise.add/zfs.d/ )
 # 
 
 htop

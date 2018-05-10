@@ -8,6 +8,7 @@
 # shows the entire system as running in degraded mode.
 # Lets avoid that.
 systemctl mask systemd-networkd-wait-online.service
+systemctl mask NetworkManager-wait-online.service
 
 # no desktop environments currently read the status from systemd-network
 # So, we only configure systemd networkd on server systems
@@ -33,6 +34,12 @@ EOF
 
     # Point name services at the systemd-resolved
     echo nameserver 127.0.0.53 >/etc/resolv.conf
+
+    # TODO
+    # - Since we expect to run hypervisors, it would be nice to be able to
+    #   create a vtap interface to automatically be our connection to the
+    #   outside world
+    # - Similar argument goes for bond devices
 fi
 
 # If we are running a desktop, thus dont have systemd-networkd (see above)

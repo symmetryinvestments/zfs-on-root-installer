@@ -3,9 +3,7 @@
 # disk
 #
 
-all:
-	@echo not yet
-	false
+all: bootable-images
 
 SUBDIRS := debian kernel
 
@@ -24,6 +22,9 @@ CONFIG_DEBIAN_VER := stretch
 ISODIR := iso
 DISK_IMAGE := $(ISODIR)/boot.img
 ISO_IMAGE := boot.iso
+
+.PHONY: bootable-images
+bootable-images: $(DISK_IMAGE) $(ISO_IMAGE)
 
 build-depends: debian/Makefile
 	$(foreach dir,$(SUBDIRS),$(MAKE) -C $(dir) $@ &&) true
@@ -73,65 +74,9 @@ $(ISO_IMAGE): $(DISK_IMAGE)
 	    --efi-boot $(notdir $(DISK_IMAGE)) \
 	    $(ISODIR)
 
-# added just for travisCI
-CONFIG_DISABLE_KVM ?= no
-ifeq ($(CONFIG_DISABLE_KVM),yes)
-    QEMU_KVM=
-else
-    QEMU_KVM=-enable-kvm
-endif
-
-QEMU_CMD := qemu-system-x86_64 $(QEMU_KVM) \
-    -m 1024 \
-    -netdev type=user,id=e0 -device virtio-net-pci,netdev=e0
-
-QEMU_EFI_CMD := $(QEMU_CMD) \
-    -bios /usr/share/qemu/OVMF.fd
-
-QEMU_ISO_CMD := $(QEMU_EFI_CMD) \
-    -cdrom $(ISO_IMAGE)
-
-# Just build the initramfs and boot it directly
-test_quick: combined.initrd kernel/ubuntu.amd64.kernel
-	$(QEMU_CMD) \
-	    -append console=ttyS0 \
-	    -kernel kernel/ubuntu.amd64.kernel \
-	    -initrd combined.initrd \
-	    -nographic
-
-# Test the EFI boot - with the 'normal' image wrapped in a ISO
-test_efi: $(ISO_IMAGE)
-	$(QEMU_ISO_CMD) \
-	    -display none \
-	    -serial null -serial stdio
-
-# Test EFI booting, with an actual graphics console visible
-test_efigui: $(ISO_IMAGE)
-	$(QEMU_ISO_CMD) \
-	    -serial vc -serial stdio
-
 persistent.storage:
 	truncate $@ --size=10G
 REALLYCLEAN_FILES += persistent.storage
-
-# Test the EFI boot - with the 'simplified' image - not wrapped
-test_efihd_persist: $(DISK_IMAGE) persistent.storage
-	$(QEMU_EFI_CMD) \
-	    -display none \
-	    -serial null -serial stdio \
-	    -drive if=virtio,format=raw,file=persistent.storage \
-	    -drive if=virtio,format=raw,id=boot,file=$(DISK_IMAGE)
-
-test_efi_persist: $(ISO_IMAGE) persistent.storage
-	$(QEMU_ISO_CMD) \
-	    -display none \
-	    -serial null -serial stdio \
-	    -drive if=virtio,format=raw,file=persistent.storage
-
-test_efigui_persist: $(ISO_IMAGE) persistent.storage
-	$(QEMU_ISO_CMD) \
-	    -serial vc -serial stdio \
-	    -drive if=virtio,format=raw,file=persistent.storage
 
 SHELL_SCRIPTS := \
 	zfs-config/packages.d/_ALWAYS.customise.add/usr/local/sbin/statuspage \
@@ -143,16 +88,103 @@ SHELL_SCRIPTS := \
 shellcheck:
 	shellcheck --shell bash $(SHELL_SCRIPTS)
 
+QEMU_RAM := 1500
+QEMU_CMD_NET := -netdev type=user,id=e0 -device virtio-net-pci,netdev=e0
+QEMU_CMD_EFI := -bios /usr/share/qemu/OVMF.fd
+QEMU_CMD_CDROM := -cdrom $(ISO_IMAGE)
+QEMU_CMD_SERIALONLY := -display none -serial null -serial stdio
+QEMU_CMD_SERIAL2 := -serial vc -serial stdio
+QEMU_CMD_DRIVE0 := -drive if=virtio,cache=unsafe,format=raw,file=persistent.storage
+
+QEMU_CMD := qemu-system-x86_64 -machine pc,accel=kvm:tcg -m $(QEMU_RAM)
+
+# Just build the initramfs and boot it directly
+test_quick: combined.initrd kernel/ubuntu.amd64.kernel
+	$(QEMU_CMD) \
+	    $(QEMU_CMD_NET) \
+	    -append console=ttyS0 \
+	    -kernel kernel/ubuntu.amd64.kernel \
+	    -initrd combined.initrd \
+	    -nographic
+
+# Test the EFI boot - with the 'normal' image wrapped in a ISO
+test_efi: $(ISO_IMAGE)
+	$(QEMU_CMD) \
+	    $(QEMU_CMD_NET) \
+	    $(QEMU_CMD_EFI) \
+	    $(QEMU_CMD_CDROM) \
+	    $(QEMU_CMD_SERIALONLY)
+
+# Test EFI booting, with an actual graphics console visible
+test_efigui: $(ISO_IMAGE)
+	$(QEMU_CMD) \
+	    $(QEMU_CMD_NET) \
+	    $(QEMU_CMD_EFI) \
+	    $(QEMU_CMD_CDROM) \
+	    $(QEMU_CMD_SERIAL2)
+
+# Test the EFI boot - with the 'simplified' image - not wrapped
+test_efihd_persist: $(DISK_IMAGE) persistent.storage
+	$(QEMU_CMD) \
+	    $(QEMU_CMD_NET) \
+	    $(QEMU_CMD_EFI) \
+	    $(QEMU_CMD_SERIALONLY) \
+	    $(QEMU_CMD_DRIVE0) \
+	    -drive if=virtio,format=raw,id=boot,file=$(DISK_IMAGE)
+
+test_efi_persist: $(ISO_IMAGE) persistent.storage
+	$(QEMU_CMD) \
+	    $(QEMU_CMD_NET) \
+	    $(QEMU_CMD_EFI) \
+	    $(QEMU_CMD_CDROM) \
+	    $(QEMU_CMD_SERIALONLY) \
+	    $(QEMU_CMD_DRIVE0)
+
+test_efigui_persist: $(ISO_IMAGE) persistent.storage
+	$(QEMU_CMD) \
+	    $(QEMU_CMD_NET) \
+	    $(QEMU_CMD_EFI) \
+	    $(QEMU_CMD_CDROM) \
+	    $(QEMU_CMD_SERIAL2) \
+	    $(QEMU_CMD_DRIVE0)
+
 # TODO - define the ROOT password only in one place, instead of here and in the
 # debian/ submodule
 INSTALLER_ROOT_PASS:=root
 
-# Run a test script against the booted test environment
-.PHONY: test
-test: debian/Makefile shellcheck
+# Common definitions used for all test targets
+TEST_HARNESS := ./debian/scripts/test_harness
+TEST_TARGET := test_efihd_persist
+TEST_ARGS := config_pass=$(INSTALLER_ROOT_PASS)
+TEST_CMD := $(TEST_HARNESS) "make $(TEST_TARGET)" $(TEST_ARGS)
+
+TESTS_STAGE1 := tests/01boot.expect tests/05login_installer.expect \
+    tests/07waitjobs.expect \
+    tests/09set.stage1.optional \
+    tests/10install1.expect \
+    tests/10install1.stop.optional
+TESTS_STAGE2 := tests/01boot.expect tests/05login_installer.expect \
+    tests/07waitjobs.expect \
+    tests/10install2.resume.optional \
+    tests/10install2.expect \
+    tests/15boot.expect \
+    tests/20login_installed.expect
+
+# Run a test script for perform a full system install
+.PHONY: test.full
+test.full: debian/Makefile
+	rm -f test.full
 	rm -f persistent.storage
-	./debian/scripts/test_harness "make test_efihd_persist" \
-	   config_pass=$(INSTALLER_ROOT_PASS)
+	$(TEST_CMD) tests/*.expect
+	touch test.full
+
+# Split the build into multiple stages
+.PHONY: test.stage1 test.stage2
+test.stage1: debian/Makefile; $(TEST_CMD) $(TESTS_STAGE1)
+test.stage2: debian/Makefile; $(TEST_CMD) $(TESTS_STAGE2)
+
+.PHONY: test
+test: shellcheck test.full
 
 clean:
 	$(foreach dir,$(SUBDIRS),$(MAKE) -C $(dir) $@ &&) true

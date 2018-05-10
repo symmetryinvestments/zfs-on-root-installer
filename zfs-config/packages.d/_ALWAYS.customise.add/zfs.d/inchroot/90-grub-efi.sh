@@ -3,12 +3,15 @@
 #
 
 # FIXME
+# - we assume that part9 is always and only ESP
 # - lsblk doesnt find any ESP partitions when run inside the chroot ?!?!
 # figure out which partitions are ESP
 #PARTS=$(lsblk -r -o "name,parttype" |grep c12a7328-f81f-11d2-ba4b-00a0c93ec93b)
 
+# What is the boot menu name of this distribution
+NAME=ubuntu
+
 # A list of all ESP partitions
-# FIXME - we assume that part9 is always and only ESP
 PARTS_BYID=$(find /dev/disk/by-id/ |grep -- -part9 ||true)
 
 # systems that don't have disk by-id labels (eg: virtio disks)
@@ -56,13 +59,22 @@ echo "Found ESP partition UUID: $UUID"
 mkdir -p /boot/efi
 echo "UUID=$UUID /boot/efi vfat nofail,x-systemd.device-timeout=1 0 1" >> /etc/fstab
 mount /boot/efi
-# FIXME
-# - this outputs an error message about "-d needs a param"
-#   probably caused because grub cannot find the physical disk for our mdarray.
-#   Most of the time this should not cause any issues - since it is simply
-#   trying to set the default boot OS in the BIOS, however if we are dualbooting
-#   (unlikely) or have a complex disk environment (more likely) then this could
-#   hurt.
 grub-install --target=x86_64-efi --efi-directory=/boot/efi \
-    --bootloader-id=ubuntu --recheck --no-floppy
+    --bootloader-id=$NAME --recheck --no-floppy \
+    --no-nvram
 umount /boot/efi
+
+# grub-install doesnt cope with a mirror set as the /boot/efi, so it cannot
+# work out which bootmgr entry to create.
+#
+# So, we create that manually here
+for i in $PARTS; do
+    RAW_PART=$(basename "$i" 9)
+
+    efibootmgr -c \
+        -d "/dev/$RAW_PART" \
+        -p 9 \
+        -w \
+        -L "$NAME" \
+        -l "\\EFI\\$NAME\\grubx64.efi"
+done

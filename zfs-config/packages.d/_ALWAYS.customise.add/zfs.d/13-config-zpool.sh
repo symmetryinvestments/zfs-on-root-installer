@@ -12,7 +12,7 @@ zpool create -f \\
     -O canmount=off \\
     -O compression=lz4 \\
     -O normalization=formD \\
-    -O mountpoint=/ \\
+    -O mountpoint=none \\
     -R /mnt \\
     \$CONFIG_POOL \\
 EOF

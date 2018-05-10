@@ -2,20 +2,19 @@
 # Create the subvolumes
 #
 
-zfs create -o canmount=off -o mountpoint=none        "$CONFIG_POOL/ROOT"
-zfs create -o canmount=noauto -o mountpoint=/        "$CONFIG_POOL/ROOT/ubuntu"
-zfs mount "$CONFIG_POOL/ROOT/ubuntu"
-zfs create -o setuid=off                             "$CONFIG_POOL/home"
+zfs create -o mountpoint=none -o canmount=off        "$CONFIG_POOL/ROOT"
+zfs create -o mountpoint=/                           "$CONFIG_POOL/ROOT/ubuntu"
+zfs create -o mountpoint=/home -o setuid=off         "$CONFIG_POOL/home"
 zfs create -o mountpoint=/root                       "$CONFIG_POOL/home/root"
-zfs create -o canmount=off -o setuid=off -o exec=off "$CONFIG_POOL/var"
-zfs create -o com.sun:auto-snapshot=false            "$CONFIG_POOL/var/cache"
-zfs create                                           "$CONFIG_POOL/var/log"
-zfs create                                           "$CONFIG_POOL/var/spool"
-zfs create "$CONFIG_POOL/var/stank" # TODO - is this just a spelling mistake?
-zfs create -o com.sun:auto-snapshot=false -o exec=on "$CONFIG_POOL/var/tmp"
-zfs create                                           "$CONFIG_POOL/srv"
-zfs create                                           "$CONFIG_POOL/var/mail"
-zfs create -o com.sun:auto-snapshot=false -o mountpoint=/var/lib/nfs "$CONFIG_POOL/var/nfs"
+zfs create -o mountpoint=/var -o canmount=off -o setuid=off -o exec=off "$CONFIG_POOL/var"
+zfs create -o mountpoint=/var/cache -o com.sun:auto-snapshot=false "$CONFIG_POOL/var/cache"
+zfs create -o mountpoint=/var/log                    "$CONFIG_POOL/var/log"
+zfs create -o mountpoint=/var/spool                  "$CONFIG_POOL/var/spool"
+zfs create -o mountpoint=/var/stank                  "$CONFIG_POOL/var/stank" # TODO - is this just a spelling mistake?
+zfs create -o mountpoint=/var/tmp -o com.sun:auto-snapshot=false -o exec=on "$CONFIG_POOL/var/tmp"
+zfs create -o mountpoint=/srv                        "$CONFIG_POOL/srv"
+zfs create -o mountpoint=/var/mail                   "$CONFIG_POOL/var/mail"
+zfs create -o mountpoint=/var/lib/nfs -o com.sun:auto-snapshot=false "$CONFIG_POOL/var/nfs"
 chmod 1777 /mnt/var/tmp
 
 # When running on linux/ubuntu/grub, it appears that the environment does not

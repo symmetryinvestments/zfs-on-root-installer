@@ -21,3 +21,4 @@ EOF
 # - This hardcodes the ubuntu release version of "artful"
 #   We could use the sources list left behind by the debootstrap,
 #   but that doesnt have all the lines needed
+# - This hardcodes the repo URL
