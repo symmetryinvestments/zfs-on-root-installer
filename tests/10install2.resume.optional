@@ -4,7 +4,9 @@
 #
 
 expect root@ramdisk {} timeout {bad 1 "shell prompt"}
+send "chmod a+x /zfs.d/79-idlebust.sh\r"
 
+expect root@ramdisk {} timeout {bad 1 "shell prompt"}
 send "bash /zfs.d/89-stage2_start.sh\r"
 
 expect "stage2: mounting ZFS volumes"   {} timeout {bad 1 "mounting ZFS"}
