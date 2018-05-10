@@ -4,5 +4,7 @@
 #
 
 expect root@ramdisk {} timeout {bad 1 "shell prompt"}
-
 send "chmod a+x /zfs.d/88-stage1_stop.sh\r"
+
+expect root@ramdisk {} timeout {bad 1 "shell prompt"}
+send "chmod a+x /zfs.d/79-idlebust.sh\r"
