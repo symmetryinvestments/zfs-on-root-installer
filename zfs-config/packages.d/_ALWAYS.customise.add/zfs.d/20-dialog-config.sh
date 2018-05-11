@@ -2,6 +2,8 @@
 # Provide a User interface to set/change some of the config
 #
 
+# TODO
+# - add CONFIG_SUITE as a menu option?
 
 if [ "$CONFIG_UNATTENDED" != "true" ]; then
     tempfile=$(mktemp)

@@ -9,11 +9,11 @@
 # a couple of symlinks and carry on.
 
 ln -f -s gutsy /usr/share/debootstrap/scripts/artful
+ln -f -s gutsy /usr/share/debootstrap/scripts/bionic
 
 export http_proxy=$CONFIG_PROXY
 
 # TODO
-# - should we hardcode the arch?
 # - should we hardcode the ubuntu archive url?
-debootstrap --arch=amd64 artful /mnt http://archive.ubuntu.com/ubuntu
+debootstrap --arch=amd64 "$CONFIG_SUITE" /mnt http://archive.ubuntu.com/ubuntu
 
