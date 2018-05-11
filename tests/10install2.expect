@@ -3,7 +3,7 @@
 #
 # part 2
 
-set timeout 2400
+set timeout 4200
 expect "apt-update.sh:"            {} timeout {bad 1 "update package list"}
 expect "apt-install.sh:"           {} timeout {bad 1 "installing packages"}
 expect "disk space will be used."  {} timeout {bad 1 "installing packages 2"}
