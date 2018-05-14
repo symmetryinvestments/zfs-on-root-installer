@@ -4,6 +4,12 @@
 # part 1
 # (this has been split apart to make partital tests and timing simpler)
 
+# check if we should run the idle buster
+if {[info exists config_idlebust]} {
+    expect root@ramdisk {} timeout {bad 1 "shell prompt"}
+    send "chmod a+x /zfs.d/79-idlebust.sh\r"
+}
+
 expect root@ramdisk {} timeout {bad 1 "shell prompt"}
 
 send "/zfs.install --unattended\r"

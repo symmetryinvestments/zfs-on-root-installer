@@ -156,7 +156,7 @@ INSTALLER_ROOT_PASS:=root
 TEST_HARNESS := ./debian/scripts/test_harness
 TEST_TARGET := test_efihd_persist
 TEST_ARGS := config_pass=$(INSTALLER_ROOT_PASS)
-TEST_CMD := $(TEST_HARNESS) "make $(TEST_TARGET)" $(TEST_ARGS)
+TEST_CMD := $(TEST_HARNESS) "make $(TEST_TARGET)" $(TEST_ARGS) $(TEST_EXTRA)
 
 TESTS_STAGE1 := tests/01boot.expect tests/05login_installer.expect \
     tests/07waitjobs.expect \
@@ -180,8 +180,8 @@ test.full: debian/Makefile
 
 # Split the build into multiple stages
 .PHONY: test.stage1 test.stage2
-test.stage1: debian/Makefile; $(TEST_CMD) $(TESTS_STAGE1)
-test.stage2: debian/Makefile; $(TEST_CMD) $(TESTS_STAGE2)
+test.stage1: debian/Makefile ; $(TEST_CMD) $(TESTS_STAGE1) config_idlebust=1
+test.stage2: debian/Makefile ; $(TEST_CMD) $(TESTS_STAGE2) config_idlebust=1
 
 .PHONY: test
 test: shellcheck test.full

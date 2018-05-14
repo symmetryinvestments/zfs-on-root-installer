@@ -28,4 +28,4 @@ script:
     - make build-depends
     - make debian
     - make bootable-images
-    - make test.full
+    - make test.full TEST_EXTRA=config_idlebust=1
