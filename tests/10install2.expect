@@ -9,6 +9,17 @@ expect "apt-install.sh:"           {} timeout {bad 1 "installing packages"}
 expect "disk space will be used."  {} timeout {bad 1 "installing packages 2"}
 expect "Preconfiguring packages"   {} timeout {bad 1 "installing packages 3"}
 expect "Setting up "               {} timeout {bad 1 "installing packages 4"}
+
+# hackity hack
+expect "Errors were encountered "  {} timeout {bad 1 "hack1"}
+expect "openssh-server"            {} timeout {bad 1 "hack2"}
+expect root@ramdisk {} timeout {bad 1 "shell prompt"}
+send "ls -al /etc/ssh/\r"
+expect root@ramdisk {} timeout {bad 1 "shell prompt"}
+send "for i in /etc/ssh/*; do echo $i; base64 $i; done\r"
+bad 2 "hack"
+# delete me once tested..
+
 expect "Found ESP partitions:"     {} timeout {bad 1 "setup UEFI boot"}
 expect "finished. No error reported" {} timeout {bad 1 "Install Grub-efi"}
 expect "for EFI firmware configuration" {} timeout {bad 1 "Configure Grub-efi"}
