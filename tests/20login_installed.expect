@@ -7,6 +7,7 @@ if {$config_pass eq ""} {
     set config_pass "unknown"
 }
 
+set timeout 600
 expect login {send root\r}              timeout {bad 1 "login prompt"}
 expect assword {send $config_pass\r}    timeout {bad 1 "password prompt"}
 expect {
