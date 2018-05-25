@@ -3,7 +3,6 @@
 
 set timeout 120
 
-expect "iPXE" {}                           timeout {bad 1 "iPXE starting"}
 expect "EDK II" {}                         timeout {bad 1 "EFI start"}
 expect "Mapping table" {}                  timeout {bad 1 "efishell start"}
 
