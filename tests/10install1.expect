@@ -12,7 +12,12 @@ if {[info exists config_idlebust]} {
 
 expect root@ramdisk {} timeout {bad 1 "shell prompt"}
 
-send "/zfs.install --unattended\r"
+send "/zfs.install --unattended"
+
+if {[info exists config_timestamps]} {
+    send " --timestamps"
+}
+send "\r"
 
 expect {
     timeout                       {bad 1 "Detecting ZFS disks"}

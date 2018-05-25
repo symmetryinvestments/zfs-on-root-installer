@@ -17,6 +17,8 @@ gdisk
 nwipe
 mdadm
 
+moreutils
+
 libnvpair1linux libzpool2linux libzfs2linux
 
 # TODO:

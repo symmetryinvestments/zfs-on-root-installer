@@ -8,6 +8,25 @@ if [ "$1" = "--unattended" ]; then
     export CONFIG_UNATTENDED=true
 fi
 
+if [ "$1" = "--timestamps" ]; then
+    shift
+    TIMESTAMPS=true
+fi
+
+runparts() {
+    for i in /zfs.d/*.sh; do
+        if [ -x "$i" ]; then
+            # shellcheck disable=SC2154
+            # the variable is set outside this script
+            echo "Starting script $script_prefix $i:"
+
+            # shellcheck source=/dev/null
+            # all to be checked by shellcheck separately
+            . "$i"
+        fi
+    done
+}
+
 set -e
 
 if [ -e /zfs.lock ]; then
@@ -16,17 +35,11 @@ if [ -e /zfs.lock ]; then
 fi
 touch /zfs.lock
 
-for i in /zfs.d/*.sh; do
-    if [ -x "$i" ]; then
-        # shellcheck disable=SC2154
-        # the variable is set outside this script
-        echo "Starting script $script_prefix $i:"
-
-        # shellcheck source=/dev/null
-        # all to be checked by shellcheck separately
-        . "$i"
-    fi
-done
+if [ "$TIMESTAMPS" = "true" ]; then
+    runparts | ts -s
+else
+    runparts
+fi
 
 rm /zfs.lock
 
