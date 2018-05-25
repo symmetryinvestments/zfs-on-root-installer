@@ -16,7 +16,14 @@ if [ -n "$CONFIG_DESKTOP" ]; then
     # - this assumes that only two .desktop type files will ever exist
 
     # Additionally, to stop gdm3 from using wayland for the login screen:
-    sed -i -E -e 's/^#(WaylandEnable=false)/\1/' /etc/gdm3/custom.conf
+    if [ -e /etc/gdm3/custom.conf ]; then
+        sed -i -E -e 's/^#(WaylandEnable=false)/\1/' /etc/gdm3/custom.conf
+    fi
+
+    # TODO
+    # - if we think we are installing a desktop environment, should we fail
+    #   (or perhaps just warn) if we do not detect you have installed a login
+    #   manager?
 
     # TODO
     # - divert /usr/share/xgreeters/unity-greeter.desktop
