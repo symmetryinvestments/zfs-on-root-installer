@@ -2,3 +2,18 @@
 # Ensure the system actually booted
 # - check the BIOS/EFI booting messages
 #
+
+# ensure enough time for whatever happens to complete (qemu may be exiting)
+sleep 5
+
+expect {
+    "GNU GRUB"    {}
+    timeout     {bad 1 "GRUB start"}
+    eof {
+        # this should not happen!
+        send_user "Sub process has exited, taking drastic action\n\n"
+
+        # dunno, police boat?
+        exit 0
+    }
+}

@@ -15,4 +15,14 @@ expect "finished. No error reported" {} timeout {bad 1 "Install Grub-efi"}
 expect "for EFI firmware configuration" {} timeout {bad 1 "Configure Grub-efi"}
 expect "Install is complete,"      {} timeout {bad 1 "Finished install"}
 
+expect "Reached target Shutdown"   {} timeout {bad 1 "systemd Shutdown"}
+
+# poweroff:
+# ACPI: Preparing to enter system sleep state S5
+# reboot: Power down
+
+# reboot:
+expect "reboot: Restarting system" {} timeout {bad 1 "kernel reboot"}
+expect "reboot: machine restart"   {} timeout {bad 1 "machine reboot"}
+
 set timeout 120
