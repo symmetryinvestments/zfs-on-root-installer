@@ -4,7 +4,7 @@
 #
 
 # ensure enough time for whatever happens to complete (qemu may be exiting)
-sleep 5
+sleep 2
 
 expect {
     "GNU GRUB"    {}
