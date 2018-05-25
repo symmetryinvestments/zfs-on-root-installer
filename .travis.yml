@@ -29,3 +29,4 @@ script:
     - make debian
     - make bootable-images
     - make test.full "TEST_EXTRA=config_idlebust=1 config_timestamps=1"
+    - make test.installed.boot

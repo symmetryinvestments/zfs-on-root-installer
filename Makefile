@@ -158,6 +158,8 @@ TEST_TARGET := test_efihd_persist
 TEST_ARGS := config_pass=$(INSTALLER_ROOT_PASS)
 TEST_CMD := $(TEST_HARNESS) "make $(TEST_TARGET)" $(TEST_ARGS) $(TEST_EXTRA)
 
+TESTS_INSTALLED_BOOT := tests/15boot.expect tests/20login_installed.expect
+
 TESTS_STAGE1 := tests/01boot.expect tests/05login_installer.expect \
     tests/07waitjobs.expect \
     tests/09set.stage1.optional \
@@ -177,6 +179,9 @@ test.full: debian/Makefile
 	rm -f persistent.storage
 	$(TEST_CMD) tests/*.expect
 	touch test.full
+
+test.installed.boot:
+	$(TEST_CMD) $(TESTS_INSTALLED_BOOT)
 
 # Split the build into multiple stages
 .PHONY: test.stage1 test.stage2
