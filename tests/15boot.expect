@@ -17,3 +17,4 @@ expect {
         exit 0
     }
 }
+send_user "Grub start detected and qemu still running\n"
