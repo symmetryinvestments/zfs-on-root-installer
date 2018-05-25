@@ -8,5 +8,5 @@
 # - during "update-initramfs"
 
 echo "starting idle buster"
-while sleep 9m; do echo -e "\n=== IDLE BUSTER $SECONDS seconds ===\n"; done &
+while sleep 9m; do echo -e "\\n=== IDLE BUSTER $SECONDS seconds ===\\n"; done &
 
