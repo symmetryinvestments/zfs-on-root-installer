@@ -11,7 +11,7 @@ total_ram=$(grep MemTotal: /proc/meminfo |awk -- '{print $2}')
 size_cache="$((total_ram*5 /2))K"
 
 # Separate Log partitions
-# "4x10GB would require 25GB"
+# "4x10Gb ethernet interfaces would require 25GB of space"
 size_slog=25G
 
 echo "Will nuke partitions on:"
