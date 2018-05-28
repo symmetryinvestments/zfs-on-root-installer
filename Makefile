@@ -135,6 +135,14 @@ test_efihd_persist: $(DISK_IMAGE) persistent.storage
 	    $(QEMU_CMD_DRIVE0) \
 	    -drive if=virtio,format=raw,id=boot,file=$(DISK_IMAGE)
 
+# Test just booting the persistend hard disk
+test_installed: persistent.storage
+	$(QEMU_CMD) \
+	    $(QEMU_CMD_NET) \
+	    $(QEMU_CMD_EFI) \
+	    $(QEMU_CMD_SERIALONLY) \
+	    $(QEMU_CMD_DRIVE0)
+
 test_efi_persist: $(ISO_IMAGE) persistent.storage
 	$(QEMU_CMD) \
 	    $(QEMU_CMD_NET) \
@@ -158,8 +166,8 @@ INSTALLER_ROOT_PASS:=root
 # Common definitions used for all test targets
 TEST_HARNESS := ./debian/scripts/test_harness
 TEST_TARGET := test_efihd_persist
+TEST_INSTALLED_TARGET := test_installed
 TEST_ARGS := config_pass=$(INSTALLER_ROOT_PASS)
-TEST_CMD := $(TEST_HARNESS) "make $(TEST_TARGET)" $(TEST_ARGS) $(TEST_EXTRA)
 
 TESTS_INSTALLED_BOOT := tests/15boot.expect tests/20login_installed.expect
 
@@ -180,11 +188,15 @@ TESTS_STAGE2 := tests/01boot.expect tests/05login_installer.expect \
 test.full: debian/Makefile
 	rm -f test.full
 	rm -f persistent.storage
-	$(TEST_CMD) tests/*.expect
+	$(TEST_HARNESS) "make $(TEST_TARGET)" $(TEST_ARGS) \
+	    $(TEST_EXTRA) \
+	    tests/*.expect
 	touch test.full
 
 test.installed.boot:
-	$(TEST_CMD) $(TESTS_INSTALLED_BOOT)
+	$(TEST_HARNESS) "make $(TEST_INSTALLED_TARGET)" $(TEST_ARGS) \
+	    $(TEST_EXTRA) \
+	    $(TESTS_INSTALLED_BOOT)
 
 # Split the build into multiple stages
 .PHONY: test.stage1 test.stage2
