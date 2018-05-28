@@ -62,6 +62,11 @@ mount /boot/efi
 grub-install --target=x86_64-efi --efi-directory=/boot/efi \
     --bootloader-id=$NAME --recheck --no-floppy \
     --no-nvram
+
+# as a belts /and/ suspender aproach - if the efi boot order doesnt find
+# the right bootloader, add a shell startup script
+echo "\\EFI\\$NAME\\grubx64.efi" >/boot/efi/startup.nsh
+
 umount /boot/efi
 
 # grub-install doesnt cope with a mirror set as the /boot/efi, so it cannot
