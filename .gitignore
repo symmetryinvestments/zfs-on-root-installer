@@ -6,3 +6,6 @@ boot.iso
 
 # Large file
 persistant.storage
+
+# Editor temp files
+.*.swp
