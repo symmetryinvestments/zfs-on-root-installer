@@ -3,9 +3,6 @@
 # - check the BIOS/EFI booting messages
 #
 
-# ensure enough time for whatever happens to complete (qemu may be exiting)
-sleep 2
-
 expect {
     "GNU GRUB"    {}
     timeout     {bad 1 "GRUB start"}
@@ -14,7 +11,18 @@ expect {
         send_user "Sub process has exited, taking drastic action\n\n"
 
         # dunno, police boat?
-        exit 0
+        exit 1
     }
 }
-send_user "Grub start detected and qemu still running\n"
+send_user "\n\n\nGrub start detected\n\n\n"
+
+# Work around some kind of race in the old software versions used in TravisCI:
+#
+# This was not needed when testing on Debian Sid, but was needed when testing
+# on Ubuntu 14.04.
+#
+# The error manifests as expect detecting that qemu has exited.  Checking the
+# processes with strace showed no reason for this to occur.
+#
+# Tested delays of 10,5,3,2,1 and 0.5 and all caused the error to go away.
+sleep 2
