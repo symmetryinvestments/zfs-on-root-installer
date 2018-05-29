@@ -16,6 +16,26 @@ expect {
 }
 send_user "\n\n\nGrub start detected\n\n\n"
 
+# Reconfigure this test boot to use the serial console
+
+expect "for a command-line" {send "e"} timeout {bad 1 "GRUB message"}
+expect {
+    "setparams" {
+        # Down 15 lines - so fragile!
+        for {set i 0} {$i < 15} {incr i} {
+            send "\x1b\[B"
+        }
+
+        # Left once, skipping to the end of the previous line
+        send "\x1b\[D"
+
+        send " console=ttyS1"
+
+        # Ctrl-x to boot
+        send "\x18"
+    }
+}
+
 # Work around some kind of race in the old software versions used in TravisCI:
 #
 # This was not needed when testing on Debian Sid, but was needed when testing
