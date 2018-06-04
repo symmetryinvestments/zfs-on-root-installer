@@ -10,37 +10,106 @@ used to perform the actual install.
 Using the installer image
 =========================
 
+Quick start:
+1) Download the installer image:
+   - use a released iso image file from github
+   - Alternatively, build the image (see the below section on building)
+1) Boot the image (using one of the boot options below)
+1) Install
 
-1) build the image (see the below section on building)
-2) Boot the image (using one of the boot options below)
-3) Login to the installer environment (using an option from How to Login below)
-4) Install
+Download
+--------
+
+There are two different installer image files created:
+- ISO file
+- img file
+
+In most circumstances, the ISO image is the one you should be using.  If your
+EFI BIOS is particularly old, you may find that the img file works better (if
+you do find this, please create a ticket letting us know as much details as
+possible - ideally, we could improve the ISO image to work)
+
+These installer image files can be downloaded from the github
+[release](https://github.com/symmetryinvestments/zfs-on-root-installer/releases)
+page - Use the most recent release for your download.
+
+Once your image file is downloaded, the simplest way to use it is to put the
+image onto a USB stick, with a tool like `dd` or [Etcher](https://etcher.io)
+
+For `dd`:
+- First, determine what disk to write to:
+
+  `lsblk -d -o NAME,SIZE,LABEL`
+
+  (carefully select the correct disk device)
+- Then write the image to the disk:
+
+  `echo "Verify and run: sudo dd if=boot.iso of=$DISK"`
+
+Boot
+----
+
+The installer image needs the EFIShell to work.  You will need to set your
+computer to boot using EFI and may need to manually interrupt the boot sequence
+and tell it to start the EFIshell (systems that have an existing operating system
+installed on the hard drive will probably need this manual step)
 
 Install
 -------
 
-The ZFS installer script is started by running /zfs.install
+Once booted, the VGA screen on the computer show a status page provided by the
+`htop` tool.  The ZFS installation can be started simply by using the *F10* key to
+exit the status page.
 
-It will detect your storage devices and suggest a ZFS layout
+At the start of the installation, some basic questions will asked (See below for
+a complete list with explanations) - the default values are mostly all fine and
+will result in a system installed with a gnome desktop environment.
 
-Either accept the suggestions or enter your own
+The default root password is `root` and should be changed.  You should also fill
+in the User login, password and Full Name.
+
+The installer will then detect your storage devices and suggest a ZFS layout.
+The suggested layout will be shown to you in two phases:
+1) A series of tick boxes allowing you to check and confirm which disks will be
+   partitioned or formatted during the installation
+2) The command line to be used to create the ZFS filesystem will be shown for
+   editing - allowing advanced users to make additional changes (or just correct
+   mistakes in the automated layout detection)
 
 Once the install is complete, you will be prompted to reboot
 
+Ways to Login
+=============
 
-
-How to Login
-============
+Unless you have built your own image, the default root password used by the
+installer is `root`
 
 Network
 -------
 
+The installer image is running an ssh server.  If you built your own image,
+there is an easy process to add ssh authorized keys to the installer.
+
+For simple network discovery, the installer image is also running a mactelnet
+server.  If you are on the same network segment as a booted installer, you can
+quickly discover the IP address it has used with the mactelnet-client software:
+`mactelnet -l` will wait for broadcasts and show the systems detected.  (If
+you build your own image, you could add a mactelnetd.users file to allow logins
+via this service, but by default it is simply for network discovery)
+
 Serial Console
 --------------
+
+A serial console is started on ttyS1, it is running at 115200 bits per second
+and is expected to be used when installing server equipment (Configure your IPMI
+Serial-over-LAN and connect remotely to this console)
 
 Local VGA Screen
 ----------------
 
+In addition to the default htop status screen, there is a login prompt on the
+virtual console 2 - this can be reached with Ctrl-Alt-F2, and the htop status
+screen returned to with Ctrl-Alt-F1
 
 Ways to Boot
 ============
@@ -58,7 +127,8 @@ Booting with a USB Stick
 
 When booting off a USB Stick, some EFI versions do not support booting from
 the stick as if it was a cdrom, so the most compatible method is to write the
-boot image to the usb stick.
+boot image to the usb stick.  But that means you need to keep track of twice
+as many image files - so ideally, all the EFI versions would work the same..
 
 Use dd (or similar) to write iso/boot.img to your USB Stick.
 
