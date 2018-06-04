@@ -3,9 +3,11 @@
 combined.initrd
 iso/
 boot.iso
+size.txt
+test.full
 
 # Large file
-persistant.storage
+persistent.storage
 
 # Editor temp files
 .*.swp
