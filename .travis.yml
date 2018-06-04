@@ -29,3 +29,14 @@ script:
     - make debian
     - make bootable-images
     - make test.full "TEST_EXTRA=config_idlebust=1 config_timestamps=1"
+
+deploy:
+    provider: releases
+    file:
+        - boot.iso
+        - iso/boot.img
+    prerelease: true
+    overwrite: true
+    skip_cleanup: true
+    on:
+        tags: true
