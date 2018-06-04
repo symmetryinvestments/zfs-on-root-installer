@@ -8,7 +8,7 @@
 if [ "$CONFIG_UNATTENDED" != "true" ]; then
     tempfile=$(mktemp)
 
-    local w_desc=20
+    w_desc=20
 
     if ! dialog \
         --backtitle "ZFS Root Installer" \
