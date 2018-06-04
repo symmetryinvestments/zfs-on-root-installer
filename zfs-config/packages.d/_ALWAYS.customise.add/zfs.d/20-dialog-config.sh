@@ -8,20 +8,22 @@
 if [ "$CONFIG_UNATTENDED" != "true" ]; then
     tempfile=$(mktemp)
 
+    local w_desc=20
+
     if ! dialog \
         --backtitle "ZFS Root Installer" \
         --insecure \
         --mixedform \
         "Configuration" 20 50 0 \
-        "Desktop Package(s):" 1 1 "$CONFIG_DESKTOP"   1 18 26 200 0 \
-        "Root Passwd:"        2 1 "$CONFIG_ROOT_PW"   2 18 26 16 1 \
-        "User Login:"         3 1 "$CONFIG_USER"      3 18 26 16 0 \
-        "User Passwd:"        4 1 "$CONFIG_USER_PW"   4 18 26 16 1 \
-        "User Full Name:"     5 1 "$CONFIG_USER_FN"   5 18 26 16 0 \
-        "System Locale:"      6 1 "$CONFIG_LOCALE"    6 18 26 80 0 \
-        "System Timezone:"    7 1 "$CONFIG_TIMEZONE"  7 18 26 80 0 \
-        "HTTP Proxy:"         8 1 "$CONFIG_PROXY"     8 18 26 200 0 \
-        "ZFS Zpool Name:"     9 1 "$CONFIG_POOL"      9 18 26 80 0 \
+        "Desktop Package(s):" 1 1 "$CONFIG_DESKTOP"   1 $w_desc 26 200 0 \
+        "Root Passwd:"        2 1 "$CONFIG_ROOT_PW"   2 $w_desc 26 16 1 \
+        "User Login:"         3 1 "$CONFIG_USER"      3 $w_desc 26 16 0 \
+        "User Passwd:"        4 1 "$CONFIG_USER_PW"   4 $w_desc 26 16 1 \
+        "User Full Name:"     5 1 "$CONFIG_USER_FN"   5 $w_desc 26 16 0 \
+        "System Locale:"      6 1 "$CONFIG_LOCALE"    6 $w_desc 26 80 0 \
+        "System Timezone:"    7 1 "$CONFIG_TIMEZONE"  7 $w_desc 26 80 0 \
+        "HTTP Proxy:"         8 1 "$CONFIG_PROXY"     8 $w_desc 26 200 0 \
+        "ZFS Zpool Name:"     9 1 "$CONFIG_POOL"      9 $w_desc 26 80 0 \
         2>"$tempfile"; then
 
         # assume the user wanted to cancel
