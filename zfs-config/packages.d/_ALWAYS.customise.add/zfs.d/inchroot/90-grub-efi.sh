@@ -59,6 +59,7 @@ echo "Found ESP partition UUID: $UUID"
 mkdir -p /boot/efi
 echo "UUID=$UUID /boot/efi vfat nofail,x-systemd.device-timeout=1 0 1" >> /etc/fstab
 mount /boot/efi
+
 grub-install --target=x86_64-efi --efi-directory=/boot/efi \
     --bootloader-id=$NAME --recheck --no-floppy \
     --no-nvram
@@ -73,9 +74,13 @@ umount /boot/efi
 # work out which bootmgr entry to create.
 #
 # So, we create that manually here
+echo Creating EFI boot variables:
 for i in $PARTS; do
-    RAW_PART=$(basename "$i" 9)
+    RAW_PART=$(lsblk -n -r -d -o "pkname" $i)
 
+    echo "boot variable for $i"
+    # TODO
+    # - shouldnt hardcode partition 9 here
     efibootmgr -c \
         -d "/dev/$RAW_PART" \
         -p 9 \
