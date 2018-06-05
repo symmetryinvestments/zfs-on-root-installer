@@ -76,7 +76,7 @@ umount /boot/efi
 # So, we create that manually here
 echo Creating EFI boot variables:
 for i in $PARTS; do
-    RAW_PART=$(lsblk -n -r -d -o "pkname" $i)
+    RAW_PART=$(lsblk -n -r -d -o "pkname" "$i")
 
     echo "boot variable for $i"
     # TODO
