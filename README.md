@@ -81,6 +81,35 @@ The suggested layout will be shown to you in two phases:
 
 Once the install is complete, you will be prompted to reboot
 
+Note that the installer can also be run from the command line, and that there
+is an unattended mode which asks no questions - to assist with automation.
+
+Installation Options Reference
+------------------------------
+
+The installer has a number of options available to tune the installed system.
+
+Env Name | Config prompt | Default
+---------|---------------|--------
+CONFIG_DESKTOP | Desktop Package(s) | ubuntu-gnome-desktop
+CONFIG_ROOT_PW | Root Passwd | root
+CONFIG_USER | User Login |
+CONFIG_USER_PW | User Passwd |
+CONFIG_USER_FN | User Full Name |
+CONFIG_LOCALE | System Locale | en_HK.UTF-8
+CONFIG_TIMEZONE | System Timezone | Asia/Hong_Kong
+CONFIG_PROXY | HTTP Proxy |
+CONFIG_POOL | ZFS Zpool Name | tank
+
+Diagnosing issues
+=================
+
+Error log
+---------
+
+Lock file
+---------
+
 Ways to Login
 =============
 
