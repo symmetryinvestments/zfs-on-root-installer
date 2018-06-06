@@ -53,6 +53,10 @@ if [ -z "$UUID" ]; then
 fi
 echo "Found ESP partition UUID: $UUID"
 
+# Remove any existing boot entries from the fstab
+# (this will only happen if the grub-efi script is being tested)
+sed -i -e 's%.* /boot/efi vfat .*%%' /etc/fstab
+
 mkdir -p /boot/efi
 echo "UUID=$UUID /boot/efi vfat nofail,x-systemd.device-timeout=1 0 1" >> /etc/fstab
 mount /boot/efi
