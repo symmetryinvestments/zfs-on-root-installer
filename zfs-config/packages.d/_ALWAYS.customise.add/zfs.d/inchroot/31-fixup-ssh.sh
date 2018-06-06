@@ -8,4 +8,3 @@
 # qemu and ubuntu 14.04
 
 apt install -y openssh-server
-
