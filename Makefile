@@ -68,6 +68,16 @@ $(DISK_IMAGE): size.txt startup.nsh combined.initrd kernel/ubuntu.amd64.kernel
 	mcopy -i $@.tmp startup.nsh ::
 	mv $@.tmp $@
 
+# TODO
+# - consider adding a EFI shell program to the bootable image?
+#   This would ensure that the installer was discovered and booted just like
+#   any other installer, but does require us to download a shell binary from
+#   somewhere.  It also increases the risk that the installer is booted
+#   accidentally - instead of the intended installed operating system
+#
+# https://github.com/tianocore/edk2/raw/master/EdkShellBinPkg/FullShell/X64/Shell_Full.efi
+# mcopy -i $@.tmp shellx64.efi ::efi/boot/
+
 $(ISO_IMAGE): $(DISK_IMAGE)
 	xorrisofs \
 	    -o $@ \
