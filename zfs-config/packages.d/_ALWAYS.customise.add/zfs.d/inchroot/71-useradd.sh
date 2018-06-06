@@ -17,7 +17,8 @@ fi
 # post-install configuration management.
 #
 groupadd --system sudonopw
-echo "%sudonopw ALL=(ALL:ALL) NOPASSWD: ALL" >/etc/sudoers.d/sudonopw
+echo "# This file created by the installer scripts" >/etc/sudoers.d/sudonopw
+echo "%sudonopw ALL=(ALL:ALL) NOPASSWD: ALL" >>/etc/sudoers.d/sudonopw
 
 for keyfile in ~root/authorized_keys/*.pub; do
     if [ ! -r "$keyfile" ]; then
