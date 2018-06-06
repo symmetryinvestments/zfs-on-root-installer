@@ -21,14 +21,7 @@ before_script:
     - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EF0F382A1A7B6500
 
 script:
-    - free
-    - cat /proc/partitions
-    - mount
-    - make shellcheck
-    - make build-depends
-    - make debian
-    - make bootable-images
-    - make test.full "TEST_EXTRA=config_idlebust=1 config_timestamps=1"
+    - make test
 
 deploy:
     provider: releases
