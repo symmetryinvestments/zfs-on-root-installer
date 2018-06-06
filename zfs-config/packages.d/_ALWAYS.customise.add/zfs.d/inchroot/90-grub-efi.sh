@@ -74,18 +74,38 @@ umount /boot/efi
 # grub-install doesnt cope with a mirror set as the /boot/efi, so it cannot
 # work out which bootmgr entry to create.
 #
-# So, we create that manually here
-echo Creating EFI boot variables:
+# So, we manually handle the boot variables here
+
+echo
+echo Boot variables before changes:
+efibootmgr -v
+echo
+
+echo Removing old EFI boot variables:
+for i in $(efibootmgr |grep ^Boot0 |cut -d"*" -f1| cut -c5-8); do
+    efibootmgr -q -B -b $i;
+done
+echo
+
+echo Creating EFI boot variables for partitions: $PARTS
 for i in $PARTS; do
     RAW_PART=$(lsblk -n -r -d -o "pkname" "$i")
 
     echo "boot variable for $i"
     # TODO
     # - shouldnt hardcode partition 9 here
-    efibootmgr -c \
+    efibootmgr -q -c \
         -d "/dev/$RAW_PART" \
         -p 9 \
         -w \
         -L "$NAME" \
-        -l "\\EFI\\$NAME\\grubx64.efi"
+        -l "\\EFI\\$NAME\\grubx64.efi" || echo WARN: Failed bootvar $RAW_PART
 done
+echo
+
+# FIXME:
+# if every efibootmgr create failed, we should have a bigger error message here
+
+echo Boot variables after changes:
+efibootmgr -v
+echo

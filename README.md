@@ -2,7 +2,10 @@ A Bare Metal Installer for ZFS on Root
 ======================================
 
 This repository is intended to produce a bootable UEFI image that allows
-installing a full bare system with ZFS disks.
+installing a full bare system with ZFS disks.  Be aware that it is not
+intended for building dual-boot systems.  While you are given the ability
+to choose which disks are used, the EFI boot system will wipe other OS
+entries.
 
 It uses an Ubuntu kernel and a minimal ramdisk builder to host the scripts
 used to perform the actual install.
