@@ -83,11 +83,11 @@ echo
 
 echo Removing old EFI boot variables:
 for i in $(efibootmgr |grep ^Boot0 |cut -d"*" -f1| cut -c5-8); do
-    efibootmgr -q -B -b $i;
+    efibootmgr -q -B -b "$i"
 done
 echo
 
-echo Creating EFI boot variables for partitions: $PARTS
+echo "Creating EFI boot variables for partitions: $PARTS"
 for i in $PARTS; do
     RAW_PART=$(lsblk -n -r -d -o "pkname" "$i")
 
@@ -99,7 +99,7 @@ for i in $PARTS; do
         -p 9 \
         -w \
         -L "$NAME" \
-        -l "\\EFI\\$NAME\\grubx64.efi" || echo WARN: Failed bootvar $RAW_PART
+        -l "\\EFI\\$NAME\\grubx64.efi" || echo "WARN: Failed bootvar $RAW_PART"
 done
 echo
 
