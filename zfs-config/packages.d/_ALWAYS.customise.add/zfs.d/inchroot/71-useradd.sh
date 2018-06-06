@@ -33,14 +33,11 @@ for keyfile in ~root/authorized_keys/*.pub; do
     mkdir -p "$SSHDIR"
     cp "$keyfile" "$SSHDIR/authorized_keys"
     chown -R "$BN:$BN" "$SSHDIR"
-    # shellcheck disable=SC2086
-    chmod -R go-wx $SSHDIR/
+    chmod -R go-wx "$SSHDIR"
     chmod go= "$SSHDIR"
 
     # TODO
-    # - what password to give users by default - no password known to users
     # - configure ssh to turn off password login!
-    echo -e "$BN:hamish" | chpasswd
 done
 
 # TODO:
