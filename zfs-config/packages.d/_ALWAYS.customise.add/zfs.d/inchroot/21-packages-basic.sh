@@ -7,4 +7,5 @@ PACKAGES+="\
     vim \
     aptitude \
     bash-completion \
+    man \
 "
