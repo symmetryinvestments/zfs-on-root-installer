@@ -30,10 +30,7 @@ PARTS=$(readlink -f $PARTS_BYID |sort |uniq)
 
 echo "Found ESP partitions: $PARTS"
 
-# Before trying to create anything, ensure that nothing is using the devices
-mdadm --stop --scan
-
-# and wipe any remaining superblocks
+# wipe any remaining superblocks
 for i in $PARTS; do
     wipefs -a "$i"
 done
