@@ -184,11 +184,14 @@ TESTS_STAGE2 := tests/01boot.expect tests/05login_installer.expect \
     tests/20login_installed.expect
 
 # Run a test script for perform a full system install
+# Assume that test.full always needs the full set of travis test helpers
+# (idlebust and timestamps
 .PHONY: test.full
 test.full: debian/Makefile
 	rm -f test.full
 	rm -f persistent.storage
 	$(TEST_HARNESS) "make $(TEST_TARGET)" $(TEST_ARGS) \
+	    config_idlebust=1 config_timestamps=1 \
 	    $(TEST_EXTRA) \
 	    tests/*.expect
 	touch test.full
@@ -204,7 +207,7 @@ test.stage1: debian/Makefile ; $(TEST_CMD) $(TESTS_STAGE1) config_idlebust=1
 test.stage2: debian/Makefile ; $(TEST_CMD) $(TESTS_STAGE2) config_idlebust=1
 
 .PHONY: test
-test: shellcheck test.full
+test: shellcheck build-depends debian bootable-images test.full
 
 clean:
 	$(foreach dir,$(SUBDIRS),$(MAKE) -C $(dir) $@ &&) true
