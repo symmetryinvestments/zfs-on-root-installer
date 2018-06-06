@@ -5,6 +5,7 @@
 # Create one specific user - intended for the interactive installation of
 # user workstations.  This user is not given sudo access here.
 if [ -n "$CONFIG_USER" ]; then
+    echo Creating user: $CONFIG_USER
     useradd -m "$CONFIG_USER" -s /bin/bash -c "$CONFIG_USER_FN"
     echo -e "$CONFIG_USER:$CONFIG_USER_PW" | chpasswd
 fi
@@ -27,6 +28,7 @@ for keyfile in ~root/authorized_keys/*.pub; do
 
     BN=$(basename "$keyfile" .pub)
 
+    echo Creating user with key: $BN
     useradd -m "$BN" -s /bin/bash -G sudo,sudonopw
 
     SSHDIR="/home/$BN/.ssh"

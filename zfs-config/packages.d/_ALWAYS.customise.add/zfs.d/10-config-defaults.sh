@@ -5,8 +5,12 @@
 # TODO
 # - invent a proxy autodetection process and use that in a different file
 
+# Ensure that all config variables that might be used by the inchroot
+# phase are exported
+
 export CONFIG_UNATTENDED CONFIG_POOL CONFIG_LOCALE CONFIG_TIMEZONE \
     CONFIG_DESKTOP CONFIG_PROXY CONFIG_ROOT_PW CONFIG_SUITE
+export CONFIG_USER CONFIG_USER_FN CONFIG_USER_PW
 
 # Set defaults for config, unless already set in the environment
 : "${CONFIG_UNATTENDED:=false}"
