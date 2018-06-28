@@ -54,8 +54,16 @@ Boot
 
 The installer image needs the EFIShell to work.  You will need to set your
 computer to boot using EFI and may need to manually interrupt the boot sequence
-and tell it to start the EFIshell (systems that have an existing operating system
-installed on the hard drive will probably need this manual step)
+and tell it to start the EFIshell (systems that have an existing operating
+system installed on the hard drive will probably need this manual step)
+
+Once the EFIShell is running it will look for a "startup.nsh" scripts on all
+the attached disks - the installer image has one of these scripts, but if your
+system has a second disk with such a script, it may not run the correct one.
+
+If you find that the EFIShell is running the wrong script, you can interrupt
+the EFIShell by pressing "ESC" when it prompts you and then manually start
+the installer by typing "install" at the "Shell>" prompt.
 
 Install
 -------

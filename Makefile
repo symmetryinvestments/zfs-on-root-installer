@@ -66,6 +66,7 @@ $(DISK_IMAGE): size.txt startup.nsh combined.initrd kernel/ubuntu.amd64.kernel
 	mcopy -i $@.tmp kernel/ubuntu.amd64.kernel ::linux.efi
 	mcopy -i $@.tmp combined.initrd ::initrd
 	mcopy -i $@.tmp startup.nsh ::
+	mcopy -i $@.tmp install.nsh ::
 	mv $@.tmp $@
 
 # TODO
