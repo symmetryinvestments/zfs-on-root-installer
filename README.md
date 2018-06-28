@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/symmetryinvestments/zfs-on-root-installer.svg?branch=master)](https://travis-ci.com/symmetryinvestments/zfs-on-root-installer)
+
 A Bare Metal Installer for ZFS on Root
 ======================================
 
