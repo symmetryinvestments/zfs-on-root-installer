@@ -67,7 +67,12 @@ grub-install --target=x86_64-efi --efi-directory=/boot/efi \
 
 # as a belts /and/ suspender aproach - if the efi boot order doesnt find
 # the right bootloader, add a shell startup script
-echo "\\EFI\\$NAME\\grubx64.efi" >/boot/efi/startup.nsh
+#
+# The scripts use a path variable to find the commands they execute, which
+# is populated automatically by the efishell.  If there is no current
+# directory set, then you cannot use a path to your command
+echo "bootx64.efi" >"/boot/efi/startup.nsh"
+echo "bootx64.efi" >"/boot/efi/$NAME.nsh"
 
 umount /boot/efi
 
