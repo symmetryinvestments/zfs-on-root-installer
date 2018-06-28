@@ -4,7 +4,6 @@
 
 # TODO
 # - add CONFIG_SUITE as a menu option?
-# - add CONFIG_HOSTNAME as a menu option
 
 if [ "$CONFIG_UNATTENDED" != "true" ]; then
     tempfile=$(mktemp)
@@ -25,6 +24,7 @@ if [ "$CONFIG_UNATTENDED" != "true" ]; then
         "System Timezone:"    7 1 "$CONFIG_TIMEZONE"  7 $w_desc 26 80 0 \
         "HTTP Proxy:"         8 1 "$CONFIG_PROXY"     8 $w_desc 26 200 0 \
         "ZFS Zpool Name:"     9 1 "$CONFIG_POOL"      9 $w_desc 26 80 0 \
+        "Hostname:"          10 1 "$CONFIG_HOSTNAME" 10 $w_desc 26 20 0 \
         2>"$tempfile"; then
 
         # assume the user wanted to cancel
@@ -46,4 +46,5 @@ if [ "$CONFIG_UNATTENDED" != "true" ]; then
     CONFIG_TIMEZONE=$(get_line 7)
     CONFIG_PROXY=$(get_line 8)
     CONFIG_POOL=$(get_line 9)
+    CONFIG_HOSTNAME=$(get_line 10)
 fi
