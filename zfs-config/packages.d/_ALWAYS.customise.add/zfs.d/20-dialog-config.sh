@@ -4,6 +4,7 @@
 
 # TODO
 # - add CONFIG_SUITE as a menu option?
+# - add CONFIG_HOSTNAME as a menu option
 
 if [ "$CONFIG_UNATTENDED" != "true" ]; then
     tempfile=$(mktemp)

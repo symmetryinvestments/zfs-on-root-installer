@@ -11,6 +11,7 @@
 export CONFIG_UNATTENDED CONFIG_POOL CONFIG_LOCALE CONFIG_TIMEZONE \
     CONFIG_DESKTOP CONFIG_PROXY CONFIG_ROOT_PW CONFIG_SUITE
 export CONFIG_USER CONFIG_USER_FN CONFIG_USER_PW
+export CONFIG_HOSTNAME
 
 # Set defaults for config, unless already set in the environment
 : "${CONFIG_UNATTENDED:=false}"
@@ -19,6 +20,10 @@ export CONFIG_USER CONFIG_USER_FN CONFIG_USER_PW
 : "${CONFIG_TIMEZONE:=Asia/Hong_Kong}"
 : "${CONFIG_ROOT_PW:=root}"
 : "${CONFIG_SUITE:=bionic}"
+
+if [ -z "$CONFIG_HOSTNAME" ]; then
+    CONFIG_HOSTNAME=$(sed -e 's/^ramdisk/installed/' /etc/hostname)
+fi
 
 # : "${ CONFIG_PROXY:=FIXME}"
 
