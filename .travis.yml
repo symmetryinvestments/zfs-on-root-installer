@@ -18,7 +18,6 @@ install:
 before_script:
     - sudo sed -i '989s/$forceyes//' /usr/sbin/multistrap
     - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 7638D0442B90D010
-    - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EF0F382A1A7B6500
 
 script:
     - make test
