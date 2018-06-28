@@ -14,7 +14,6 @@ S=0
 script_prefix=inchroot chroot /mnt /zfs.install || S=$?
 
 if [ "$S" -ne 0 ]; then
-    # cause an exit, but only /after/ we have cleaned up
     echo "ERROR: something in the chroot exited with an error ($S)"
     false
 fi
@@ -26,5 +25,9 @@ umount /mnt/dev
 umount /mnt/proc
 umount /mnt/sys
 
+# Remove our installer script files from the installed system
 rm -f /mnt/zfs.install
 rm -rf /mnt/zfs.d
+
+# TODO
+# - copy any /zfs.log file from the ramdisk into the installed system?
