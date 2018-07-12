@@ -54,6 +54,9 @@ For `dd`:
 Boot
 ----
 
+This installer create boot images that will not work with Secure Boot, so be
+sure to turn this feature off if your computer has it.
+
 The installer image needs the EFIShell to work.  You will need to set your
 computer to boot using EFI and may need to manually interrupt the boot sequence
 and tell it to start the EFIshell (systems that have an existing operating

@@ -5,8 +5,8 @@
 # TODO
 # - add CONFIG_SUITE as a menu option?
 
-if [ "$CONFIG_UNATTENDED" != "true" ]; then
-    tempfile=$(mktemp)
+dialog_ask() {
+    local tempfile="$1"
 
     w_desc=20
 
@@ -47,4 +47,31 @@ if [ "$CONFIG_UNATTENDED" != "true" ]; then
     CONFIG_PROXY=$(get_line 8)
     CONFIG_POOL=$(get_line 9)
     CONFIG_HOSTNAME=$(get_line 10)
+}
+
+dialog_show() {
+    local tempfile="$1"
+
+    # FIXME - obscure the passwords!
+
+    show=$(sed -e 's/^/	/' "$tempfile")
+    dialog \
+        --clear \
+        --backtitle "ZFS Root Installer" \
+        --no-collapse --cr-wrap \
+        --yes-label "Keep" \
+        --no-label "Edit" \
+        --yesno "Selected Configuration:\n\
+$show" 20 50
+}
+
+if [ "$CONFIG_UNATTENDED" != "true" ]; then
+    tempfile=$(mktemp)
+
+    S=1
+    while [ "$S" = "1" ]; do
+        dialog_ask "$tempfile"
+        dialog_show "$tempfile"
+        S="$?"
+    done
 fi
