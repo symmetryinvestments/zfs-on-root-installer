@@ -47,8 +47,26 @@ dialog_checklist() {
     fi
 }
 
+dialog_msg() {
+    if ! dialog \
+        --backtitle "ZFS Root Installer" \
+        --visit-items \
+        --msgbox \
+        "$*" 15 70; then
+
+        # assume the user wanted to cancel
+        exit 1
+    fi
+}
+
 if [ "$CONFIG_UNATTENDED" != "true" ]; then
     tempinput=$(disk_checklist "$ZFS_PART_BULKBOOT")
+
+    if [ ! -s "$tempinput" ]; then
+        dialog_msg "No disks found, cannot continue"
+        exit 1
+    fi
+
     tempoutput=$(mktemp)
     dialog_checklist "$tempinput" "$tempoutput" "ZFS data and ESP boot: Marked disks will be wiped and partitioned"
     ZFS_PART_BULKBOOT=$(cat "$tempoutput")
