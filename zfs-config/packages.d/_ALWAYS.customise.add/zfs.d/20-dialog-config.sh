@@ -8,23 +8,23 @@
 dialog_ask() {
     local tempfile="$1"
 
-    w_desc=20
+    w_desc=23
 
     if ! dialog \
         --backtitle "ZFS Root Installer" \
         --insecure \
         --mixedform \
-        "Configuration" 20 50 0 \
-        "Desktop Package(s):" 1 1 "$CONFIG_DESKTOP"   1 $w_desc 26 200 0 \
-        "Root Passwd:"        2 1 "$CONFIG_ROOT_PW"   2 $w_desc 26 16 1 \
-        "User Login:"         3 1 "$CONFIG_USER"      3 $w_desc 26 16 0 \
-        "User Passwd:"        4 1 "$CONFIG_USER_PW"   4 $w_desc 26 16 1 \
-        "User Full Name:"     5 1 "$CONFIG_USER_FN"   5 $w_desc 26 16 0 \
-        "System Locale:"      6 1 "$CONFIG_LOCALE"    6 $w_desc 26 80 0 \
-        "System Timezone:"    7 1 "$CONFIG_TIMEZONE"  7 $w_desc 26 80 0 \
-        "HTTP Proxy:"         8 1 "$CONFIG_PROXY"     8 $w_desc 26 200 0 \
-        "ZFS Zpool Name:"     9 1 "$CONFIG_POOL"      9 $w_desc 26 80 0 \
-        "Hostname:"          10 1 "$CONFIG_HOSTNAME" 10 $w_desc 26 20 0 \
+        "Configuration" 18 55 0 \
+        " 1 Desktop Package(s):" 1 1 "$CONFIG_DESKTOP"   1 $w_desc 26 200 0 \
+        " 2 Root Passwd:"        2 1 "$CONFIG_ROOT_PW"   2 $w_desc 26 16 1 \
+        " 3 User Login:"         3 1 "$CONFIG_USER"      3 $w_desc 26 16 0 \
+        " 4 User Passwd:"        4 1 "$CONFIG_USER_PW"   4 $w_desc 26 16 1 \
+        " 5 User Full Name:"     5 1 "$CONFIG_USER_FN"   5 $w_desc 26 16 0 \
+        " 6 System Locale:"      6 1 "$CONFIG_LOCALE"    6 $w_desc 26 80 0 \
+        " 7 System Timezone:"    7 1 "$CONFIG_TIMEZONE"  7 $w_desc 26 80 0 \
+        " 8 HTTP Proxy:"         8 1 "$CONFIG_PROXY"     8 $w_desc 26 200 0 \
+        " 9 ZFS Zpool Name:"     9 1 "$CONFIG_POOL"      9 $w_desc 26 80 0 \
+        "10 Hostname:"          10 1 "$CONFIG_HOSTNAME" 10 $w_desc 26 20 0 \
         2>"$tempfile"; then
 
         # assume the user wanted to cancel
@@ -62,7 +62,7 @@ dialog_show() {
         --yes-label "Keep" \
         --no-label "Edit" \
         --yesno "Selected Configuration:\n\
-$show" 20 50
+$show" 18 55
 }
 
 if [ "$CONFIG_UNATTENDED" != "true" ]; then
