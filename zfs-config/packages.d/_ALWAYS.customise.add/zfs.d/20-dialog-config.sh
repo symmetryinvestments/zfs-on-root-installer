@@ -54,7 +54,7 @@ dialog_show() {
 
     # FIXME - obscure the passwords!
 
-    show=$(sed -e 's/^/	/' "$tempfile")
+    show=$(cat -n "$tempfile")
     dialog \
         --clear \
         --backtitle "ZFS Root Installer" \
@@ -68,10 +68,12 @@ $show" 20 50
 if [ "$CONFIG_UNATTENDED" != "true" ]; then
     tempfile=$(mktemp)
 
+    set +e
     S=1
     while [ "$S" = "1" ]; do
         dialog_ask "$tempfile"
         dialog_show "$tempfile"
         S="$?"
     done
+    set -e
 fi
