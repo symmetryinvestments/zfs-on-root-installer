@@ -52,9 +52,10 @@ dialog_ask() {
 dialog_show() {
     local tempfile="$1"
 
-    # FIXME - obscure the passwords!
+    # TODO
+    # - the sed hack to obscure the passwords is brittle
+    show=$(sed -e '2s/./*/g; 4s/./*/g' "$tempfile" |cat -n)
 
-    show=$(cat -n "$tempfile")
     dialog \
         --clear \
         --backtitle "ZFS Root Installer" \
