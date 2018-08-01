@@ -62,7 +62,7 @@ dialog_show() {
         --no-collapse --cr-wrap \
         --yes-label "Keep" \
         --no-label "Edit" \
-        --yesno "Selected Configuration:\n\
+        --yesno "Selected Configuration:\\n\
 $show" 18 55
 }
 
