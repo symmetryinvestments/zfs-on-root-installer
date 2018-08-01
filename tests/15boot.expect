@@ -3,18 +3,21 @@
 # - check the BIOS/EFI booting messages
 #
 
-expect {
-    "GNU GRUB"    {}
-    timeout     {bad 1 "GRUB start"}
-    eof {
-        # this should not happen!
-        send_user "Sub process has exited, taking drastic action\n\n"
+# TODO - actually test for this step
 
-        # dunno, police boat?
-        exit 1
-    }
-}
-send_user "\n\n\nGrub start detected\n\n\n"
+# Cannot assume that we will boot via grub - we could take the UEFI path
+#expect {
+#    "GNU GRUB"    {}
+#    timeout     {bad 1 "GRUB start"}
+#    eof {
+#        # this should not happen!
+#        send_user "Sub process has exited, taking drastic action\n\n"
+#
+#        # dunno, police boat?
+#        exit 1
+#    }
+#}
+#send_user "\n\n\nGrub start detected\n\n\n"
 
 # This section not used as it conflicts with the "sleep" workaround below
 # # Reconfigure this test boot to use the serial console
