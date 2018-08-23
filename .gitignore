@@ -6,6 +6,9 @@ boot.iso
 size.txt
 test.full
 
+# Downloaded
+Shell.efi
+
 # Large file
 persistent.storage
 

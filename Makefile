@@ -19,6 +19,8 @@ export CONFIG_DEBIAN_ARCH
 
 CONFIG_DEBIAN_VER := stretch
 
+SHELL_URL := https://github.com/tianocore/edk2/blob/UDK2018/ShellBinPkg/UefiShell/X64/Shell.efi
+
 ISODIR := iso
 DISK_IMAGE := $(ISODIR)/boot.img
 ISO_IMAGE := boot.iso
@@ -53,31 +55,25 @@ kernel/ubuntu.amd64.kernel kernel/ubuntu.amd64.modules.cpio:
 combined.initrd: $(DEBIAN).cpio kernel/ubuntu.amd64.modules.cpio
 	cat $^ >$@
 
-# Create a file with the size of the needed disk image in it
-size.txt: combined.initrd kernel/ubuntu.amd64.kernel
-	echo $$(($$(stat -c %s combined.initrd)/1048576 +$$(stat -c %s kernel/ubuntu.amd64.kernel)/1048576 +2)) >$@
+Shell.efi:
+	wget -O $@ $(SHELL_URL)
 
-$(DISK_IMAGE): size.txt startup.nsh combined.initrd kernel/ubuntu.amd64.kernel
+# Create a file with the size of the needed disk image in it
+size.txt: combined.initrd kernel/ubuntu.amd64.kernel Shell.efi
+	echo $$(($$(stat -c %s combined.initrd)/1048576 +$$(stat -c %s kernel/ubuntu.amd64.kernel)/1048576 +$$(stat -c %s Shell.efi)/1048576 +3)) >$@
+
+$(DISK_IMAGE): size.txt startup.nsh combined.initrd kernel/ubuntu.amd64.kernel Shell.efi
 	mkdir -p $(dir $@)
 	truncate --size=$$(cat size.txt)M $@.tmp
 	mformat -i $@.tmp -v EFS -N 2 -t $$(cat size.txt) -h 64 -s 32 ::
 	mmd -i $@.tmp ::efi
 	mmd -i $@.tmp ::efi/boot
+	mcopy -i $@.tmp Shell.efi ::efi/boot/bootx64.efi
 	mcopy -i $@.tmp kernel/ubuntu.amd64.kernel ::linux.efi
 	mcopy -i $@.tmp combined.initrd ::initrd
 	mcopy -i $@.tmp startup.nsh ::
 	mcopy -i $@.tmp install.nsh ::
 	mv $@.tmp $@
-
-# TODO
-# - consider adding a EFI shell program to the bootable image?
-#   This would ensure that the installer was discovered and booted just like
-#   any other installer, but does require us to download a shell binary from
-#   somewhere.  It also increases the risk that the installer is booted
-#   accidentally - instead of the intended installed operating system
-#
-# https://github.com/tianocore/edk2/raw/master/EdkShellBinPkg/FullShell/X64/Shell_Full.efi
-# mcopy -i $@.tmp shellx64.efi ::efi/boot/
 
 $(ISO_IMAGE): $(DISK_IMAGE)
 	xorrisofs \
