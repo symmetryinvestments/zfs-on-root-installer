@@ -1,0 +1,18 @@
+#!/bin/bash
+#
+
+DEBOOT="$1"
+#ARCH="$2"
+
+mv ${DEBOOT}/etc/issue ${DEBOOT}/etc/issue.bak
+
+pushd $(dirname $0)
+VERSION=$(git describe --always --dirty)
+popd
+
+echo "BUILDER_ZFS_VER=$VERSION" >>${DEBOOT}/etc/os-release
+echo "ZFS Builder \S{BUILDER_ZFS_VER}" >${DEBOOT}/etc/issue
+
+cat ${DEBOOT}/etc/issue.bak >>${DEBOOT}/etc/issue
+rm ${DEBOOT}/etc/issue.bak
+
