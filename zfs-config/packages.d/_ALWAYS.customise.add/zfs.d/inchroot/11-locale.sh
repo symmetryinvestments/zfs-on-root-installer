@@ -2,6 +2,7 @@
 # Configure the locale
 #
 
+# TODO - perhaps use validlocale(8)
 if ! locale-gen "$CONFIG_LOCALE"; then
     # The user specified locale doesnt validate, use a hardcoded fallback.
     echo "WARNING: The locale $CONFIG_LOCALE is invalid"

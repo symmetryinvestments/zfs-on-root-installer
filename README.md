@@ -26,13 +26,11 @@ Download
 --------
 
 There are two different installer image files created:
+- IMG file
 - ISO file
-- img file
 
-In most circumstances, the ISO image is the one you should be using.  If your
-EFI BIOS is particularly old, you may find that the img file works better (if
-you do find this, please create a ticket letting us know as much details as
-possible - ideally, we could improve the ISO image to work)
+In most circumstances, the IMG image is the normal version to use as it is
+a standard EFI bootable disk image.
 
 These installer image files can be downloaded from the github
 [release](https://github.com/symmetryinvestments/zfs-on-root-installer/releases)
@@ -54,28 +52,35 @@ For `dd`:
 Boot
 ----
 
-This installer create boot images that will not work with Secure Boot, so be
+This installer creates boot images that will not work with Secure Boot, so be
 sure to turn this feature off if your computer has it.
 
-The installer image needs the EFIShell to work.  You will need to set your
-computer to boot using EFI and may need to manually interrupt the boot sequence
-and tell it to start the EFIshell (systems that have an existing operating
+You will need to set your computer to boot using EFI (as opposed to "legacy"
+or "BIOS" boot mode) and may need to manually interrupt the boot sequence
+to select booting from the USB stick (systems that have an existing operating
 system installed on the hard drive will probably need this manual step)
 
-Once the EFIShell is running it will look for a "startup.nsh" scripts on all
-the attached disks - the installer image has one of these scripts, but if your
-system has a second disk with such a script, it may not run the correct one.
+The installer is built using the EFIShell tool, which will automatically
+load a "startup.nsh" script to start the install process.  However, if your
+system has more than one disk with a "startup.nsh" script, it may not run the
+correct one.
 
-If you find that the EFIShell is running the wrong script, you can interrupt
-the EFIShell by pressing "ESC" when it prompts you and then manually start
-the installer by typing "install" at the "Shell>" prompt.
+If you find that the EFIShell is running the wrong script, you should reboot and
+interrupt the EFIShell by pressing "ESC" when it prompts you and then manually
+start the installer by typing "install" at the "Shell>" prompt.
+
+This boot process can take a significant amount of time - it needs to load and
+uncompress >200Meg of data from the (sometimes quite slow) USB stick.
+
+
+TODO - make a joke about the pen (supermicro boot menu)
 
 Install
 -------
 
 Once booted, the VGA screen on the computer show a status page provided by the
-`htop` tool.  The ZFS installation can be started simply by using the *F10* key to
-exit the status page.
+`htop` tool.  The ZFS installation can be started simply by using the *F10* key
+to exit the status page.
 
 At the start of the installation, some basic questions will asked (See below for
 a complete list with explanations) - the default values are mostly all fine and
@@ -104,15 +109,16 @@ The installer has a number of options available to tune the installed system.
 
 Env Name | Config prompt | Default
 ---------|---------------|--------
-CONFIG_DESKTOP | Desktop Package(s) | ubuntu-gnome-desktop
-CONFIG_ROOT_PW | Root Passwd | root
-CONFIG_USER | User Login |
-CONFIG_USER_PW | User Passwd |
-CONFIG_USER_FN | User Full Name |
-CONFIG_LOCALE | System Locale | en_HK.UTF-8
+CONFIG_DESKTOP  | Desktop Package(s) | ubuntu-gnome-desktop
+CONFIG_ROOT_PW  | Root Passwd | root
+CONFIG_USER     | User Login |
+CONFIG_USER_PW  | User Passwd |
+CONFIG_USER_FN  | User Full Name |
+CONFIG_LOCALE   | System Locale | en_HK.UTF-8
 CONFIG_TIMEZONE | System Timezone | Asia/Hong_Kong
-CONFIG_PROXY | HTTP Proxy |
-CONFIG_POOL | ZFS Zpool Name | tank
+CONFIG_PROXY    | HTTP Proxy |
+CONFIG_POOL     | ZFS Zpool Name | tank
+CONFIG_HOSTNAME | Installed system's hostname | Based on a generated name
 
 Diagnosing issues
 =================
@@ -120,8 +126,21 @@ Diagnosing issues
 Error log
 ---------
 
+The interactive installation keeps a log of the installation process in
+"/zfs.log".  If the install fails, this file can be checked for error messages.
+
+TODO
+- change this log file to be kept after a successful install
+
 Lock file
 ---------
+
+To ensure that two installs are not running on the same system, when the
+installer is started, it creates a lock file "/zfs.lock".
+
+If the installation fails for a temporary reason, this lock file will need to
+be manually deleted before retrying the install (or, simply reboot the
+installer)
 
 Ways to Login
 =============
@@ -170,12 +189,11 @@ Attach the boot.iso file using the virtial media controls
 Booting with a USB Stick
 ------------------------
 
-When booting off a USB Stick, some EFI versions do not support booting from
-the stick as if it was a cdrom, so the most compatible method is to write the
-boot image to the usb stick.  But that means you need to keep track of twice
-as many image files - so ideally, all the EFI versions would work the same..
+When using the ISO image, be aware that some EFI versions do not support
+booting from the stick as if it was a cdrom.
 
-Use dd (or similar) to write iso/boot.img to your USB Stick.
+The ISO file is mainly built for people who are remotely installing a server
+using a IPMI or BMC controller and a Virtual CDROM.
 
 Some notes on UEFI
 ------------------
@@ -212,9 +230,9 @@ software is installed:
 
 Then build the main installer images:
 
-    make boot.iso
+    make bootable-images
 
-The completed boot.iso can be used to boot a system.
+The completed boot.iso and boot.img can be used to boot a system.
 
 Not all the dependancies are correctly managed, so if you need to ensure a
 full rebuild is done, a clean can be done before the build:
