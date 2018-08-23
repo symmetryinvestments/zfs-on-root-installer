@@ -8,4 +8,5 @@ PACKAGES+="\
     aptitude \
     bash-completion \
     man \
+    python \
 "
