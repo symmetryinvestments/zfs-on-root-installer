@@ -30,20 +30,17 @@ PARTS=$(readlink -f $PARTS_BYID |sort |uniq)
 
 echo "Found ESP partitions: $PARTS"
 
+unset FSDEV
+unset COPYDEVS
 # wipe any remaining superblocks
 for i in $PARTS; do
     wipefs -a "$i"
+    if [ -z "$FSDEV" ]; then
+        FSDEV="$i"
+    else
+        COPYDEVS+="$i "
+    fi
 done
-
-PARTSNR=$(echo "$PARTS" | wc -w)
-FSDEV=/dev/md0
-
-# shellcheck disable=SC2086
-mdadm --create $FSDEV --metadata=0.90 --level=mirror \
-    --raid-devices="$PARTSNR" --force $PARTS
-# Note that the --force is here so that we can have a mirror with 1 drive in
-# it, which is useful in a test environment and provides a consistant setup
-# to production hardware
 
 mkdosfs -F 32 -n ESP "$FSDEV"
 UUID=$(blkid -s UUID -o value "$FSDEV")
@@ -62,8 +59,7 @@ echo "UUID=$UUID /boot/efi vfat nofail,x-systemd.device-timeout=1 0 1" >> /etc/f
 mount /boot/efi
 
 grub-install --target=x86_64-efi --efi-directory=/boot/efi \
-    --bootloader-id=$NAME --recheck --no-floppy \
-    --no-nvram
+    --bootloader-id=$NAME --recheck --no-floppy
 
 # as a belts /and/ suspender aproach - if the efi boot order doesnt find
 # the right bootloader, add a shell startup script
@@ -74,43 +70,13 @@ grub-install --target=x86_64-efi --efi-directory=/boot/efi \
 echo "bootx64.efi" >"/boot/efi/startup.nsh"
 echo "bootx64.efi" >"/boot/efi/$NAME.nsh"
 
+# Ensure all our duplicate ESP devices start out with a working config
+for i in $COPYDEVS; do
+    mkdosfs -F 32 -n ESPcopy "$i"
+    mount "$i" /mnt
+    cp -a /boot/efi/* /mnt/
+    umount /mnt
+done
+
 umount /boot/efi
 
-# grub-install doesnt cope with a mirror set as the /boot/efi, so it cannot
-# work out which bootmgr entry to create.
-#
-# So, we manually handle the boot variables here
-
-echo
-echo Boot variables before changes:
-efibootmgr -v
-echo
-
-echo Removing old EFI boot variables:
-for i in $(efibootmgr |grep ^Boot0 |cut -d"*" -f1| cut -c5-8); do
-    efibootmgr -q -B -b "$i"
-done
-echo
-
-echo "Creating EFI boot variables for partitions: $PARTS"
-for i in $PARTS; do
-    RAW_PART=$(lsblk -n -r -d -o "pkname" "$i")
-
-    echo "boot variable for $i"
-    # TODO
-    # - shouldnt hardcode partition 9 here
-    efibootmgr -q -c \
-        -d "/dev/$RAW_PART" \
-        -p 9 \
-        -w \
-        -L "$NAME" \
-        -l "\\EFI\\$NAME\\grubx64.efi" || echo "WARN: Failed bootvar $RAW_PART"
-done
-echo
-
-# FIXME:
-# if every efibootmgr create failed, we should have a bigger error message here
-
-echo Boot variables after changes:
-efibootmgr -v
-echo
