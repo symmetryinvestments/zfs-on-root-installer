@@ -19,7 +19,7 @@ export CONFIG_DEBIAN_ARCH
 
 CONFIG_DEBIAN_VER := stretch
 
-SHELL_URL := https://github.com/tianocore/edk2/blob/UDK2018/ShellBinPkg/UefiShell/X64/Shell.efi
+SHELL_URL := https://github.com/tianocore/edk2/raw/UDK2018/ShellBinPkg/UefiShell/X64/Shell.efi
 
 ISODIR := iso
 DISK_IMAGE := $(ISODIR)/boot.img
